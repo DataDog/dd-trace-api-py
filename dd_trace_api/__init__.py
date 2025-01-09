@@ -58,51 +58,51 @@ class Span:
     ]
 
 
-class SamplingRule:
+class _SamplingRule:
     __slots__ = ["sample_rate", "matches", "tags_match", "check_tags", "sample", "choose_matcher"]
 
 
-class SamplingError:
+class _SamplingError:
     pass
 
 
-class BaseSampler:
+class _BaseSampler:
     __slots__ = ["sample"]
 
 
-class BasePrioritySampler:
+class _BasePrioritySampler:
     __slots__ = ["update_rate_by_service_sample_rates"]
 
 
-class AllSampler:
+class _AllSampler:
     __slots__ = ["sample"]
 
 
-class RateSampler:
+class _RateSampler:
     __slots__ = ["sample", "set_sample_rate"]
 
 
-class RateByServiceSampler:
+class _RateByServiceSampler:
     __slots__ = ["sample", "set_sample_rate", "update_rate_by_service_sample_rates"]
 
 
-class DatadogSampler:
+class _DatadogSampler:
     __slots__ = ["default_sample_rate", "limiter", "sample", "update_rate_by_service_sample_rates"]
 
 
-class BaseContextProvider:
+class _BaseContextProvider:
     __slots__ = ["activate", "active"]
 
 
-class DatadogContextMixin:
+class _DatadogContextMixin:
     __slots__ = ["activate", "active"]
 
 
-class DefaultContextProvider:
+class _DefaultContextProvider:
     __slots__ = ["activate", "active"]
 
 
-class CIContextProvider:
+class _CIContextProvider:
     __slots__ = ["activate", "active"]
 
 
@@ -110,21 +110,18 @@ class Pin:
     __slots__ = ["service", "tags", "tracer", "get_from", "override", "enabled", "onto", "remove_from", "clone"]
 
 
-class TraceFilter:
+class _TraceFilter:
     __slots__ = ["process_trace"]
 
 
-class FilterRequestsOnUrl:
+class _FilterRequestsOnUrl:
     __slots__ = ["process_trace"]
 
 
-class data_streams:
-    __slots__ = ["set_consume_checkpoint", "set_produce_checkpoint"]
-
-
-class Context:
+class _Context:
     __slots__ = [
-        "sampling_priority" "trace_id",
+        "sampling_priority",
+        "trace_id",
         "span_id",
         "dd_origin",
         "dd_user_id",
@@ -134,3 +131,47 @@ class Context:
         "remove_baggage_item",
         "remove_all_baggage_items",
     ]
+
+
+class context:
+    __slots__ = ["Context"]
+
+
+class data_streams:
+    __slots__ = ["set_consume_checkpoint", "set_produce_checkpoint"]
+
+
+class filters:
+    __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
+
+
+class pin:
+    __slots__ = ["Pin"]
+
+
+class provider:
+    __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
+
+
+class sampler:
+    __slots__ = [
+        "BaseSampler",
+        "BasePrioritySampler",
+        "AllSampler",
+        "RateSampler",
+        "RateByServiceSampler",
+        "DatadogSampler",
+        "SamplingError",
+    ]
+
+
+class sampling_rule:
+    __slots__ = ["SamplingRule"]
+
+
+class span:
+    __slots__ = ["Span"]
+
+
+class tracer:
+    __slots__ = ["Tracer"]
