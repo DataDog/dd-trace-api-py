@@ -1,25 +1,56 @@
-class Tracer:
-    __slots__ = [
-        "sample",
-        "sampler",
-        "on_start_span",
-        "deregister_on_start_span",
-        "debug_logging",
-        "current_trace_context",
-        "get_log_correlation_context",
-        "configure",
-        "start_span",
-        "trace",
-        "current_root_span",
-        "current_span",
-        "agent_trace_url",
-        "flush",
-        "wrap",
-        "set_tags",
-        "shutdown",
-        "enabled",
-        "context_provider",
-    ]
+from typing import Any
+
+
+__all__ = [
+    "Pin",
+    "Span",
+    "Tracer",
+    "context",
+    "data_streams",
+    "filters",
+    "pin",
+    "provider",
+    "sampling_rule",
+    "sampler",
+    "span",
+    "tracer",
+]
+
+
+class _Stub:
+    def __getattr__(self, attr: Any) -> Any:
+        if attr in self.__slots__:
+            return self._attributes[attr]()
+
+
+class _CallableStub(_Stub):
+    def __call__(self, *args, **kwargs):
+        pass
+
+
+class Tracer(_Stub):
+    _attributes = {
+        "sample": _CallableStub,
+        "sampler": _Stub,
+        "on_start_span": _CallableStub,
+        "deregister_on_start_span": _CallableStub,
+        "debug_logging": _Stub,
+        "current_trace_context": _Stub,
+        "get_log_correlation_context": _CallableStub,
+        "configure": _CallableStub,
+        "start_span": _CallableStub,
+        "trace": _CallableStub,
+        "current_root_span": _Stub,
+        "current_span": _Stub,
+        "agent_trace_url": _Stub,
+        "flush": _CallableStub,
+        "wrap": _CallableStub,
+        "set_tags": _CallableStub,
+        "shutdown": _CallableStub,
+        "enabled": _Stub,
+        "context_provider": _Stub,
+    }
+    __slots__ = list(_attributes.keys())
 
 
 class Span:
