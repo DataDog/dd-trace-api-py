@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Type, Optional
 
 
 __all__ = [
@@ -18,75 +18,80 @@ __all__ = [
 
 
 class _Stub:
-    def __getattr__(self, attr: Any) -> Any:
-        if attr in self.__slots__:
-            return self._attributes[attr]()
+    pass
 
 
 class _CallableStub(_Stub):
+    def __init__(self, return_type: Optional[Type] = None):
+        self.return_type = return_type or _Stub
+
     def __call__(self, *args, **kwargs):
-        pass
+        return self.return_type() or None
+
+
+_SpanStub_attributes = {}
+
+
+class _SpanStub(_Stub):
+    def __init__(self):
+        self.name = _Stub()
+        self.service = _Stub()
+        self.span_type = _Stub()
+        self.error = _Stub()
+        self.start_ms = _Stub()
+        self.duration_ms = _Stub()
+        self.span_id = _Stub()
+        self.parent_id = _Stub()
+        self.start = _CallableStub()
+        self.resource = _Stub()
+        self.finished = _Stub()
+        self.duration = _Stub()
+        self.sampled = _Stub()
+        self.finish = _CallableStub()
+        self.set_tag = _CallableStub()
+        self.set_struct_tag = _CallableStub()
+        self.get_struct_tag = _CallableStub()
+        self.set_tag_str = _CallableStub()
+        self.get_tag = _CallableStub()
+        self.get_tags = _CallableStub()
+        self.set_tags = _CallableStub()
+        self.set_metric = _CallableStub()
+        self.set_metrics = _CallableStub()
+        self.get_metric = _CallableStub()
+        self.get_metrics = _CallableStub()
+        self.set_traceback = _CallableStub()
+        self.set_exc_info = _CallableStub()
+        self.context = _Stub()
+        self.link_span = _CallableStub()
+        self.set_link = _CallableStub()
+        self.finish_with_ancestors = _CallableStub()
+
+
+class Span(_SpanStub):
+    pass
 
 
 class Tracer(_Stub):
-    _attributes = {
-        "sample": _CallableStub,
-        "sampler": _Stub,
-        "on_start_span": _CallableStub,
-        "deregister_on_start_span": _CallableStub,
-        "debug_logging": _Stub,
-        "current_trace_context": _Stub,
-        "get_log_correlation_context": _CallableStub,
-        "configure": _CallableStub,
-        "start_span": _CallableStub,
-        "trace": _CallableStub,
-        "current_root_span": _Stub,
-        "current_span": _Stub,
-        "agent_trace_url": _Stub,
-        "flush": _CallableStub,
-        "wrap": _CallableStub,
-        "set_tags": _CallableStub,
-        "shutdown": _CallableStub,
-        "enabled": _Stub,
-        "context_provider": _Stub,
-    }
-    __slots__ = list(_attributes.keys())
-
-
-class Span:
-    __slots__ = [
-        "name",
-        "service",
-        "span_type",
-        "error",
-        "start_ms",
-        "duration_ms",
-        "span_id",
-        "parent_id",
-        "start",
-        "resource",
-        "finished",
-        "duration",
-        "sampled",
-        "finish",
-        "set_tag",
-        "set_struct_tag",
-        "get_struct_tag",
-        "set_tag_str",
-        "get_tag",
-        "get_tags",
-        "set_tags",
-        "set_metric",
-        "set_metrics",
-        "get_metric",
-        "get_metrics",
-        "set_traceback",
-        "set_exc_info",
-        "context",
-        "link_span",
-        "set_link",
-        "finish_with_ancestors",
-    ]
+    def __init__(self):
+        self.sample = _CallableStub()
+        self.sampler = _Stub()
+        self.on_start_span = _CallableStub()
+        self.deregister_on_start_span = _CallableStub()
+        self.debug_logging = _Stub()
+        self.current_trace_context = _Stub()
+        self.get_log_correlation_context = _CallableStub()
+        self.configure = _CallableStub()
+        self.start_span = _CallableStub()
+        self.trace = _CallableStub()
+        self.current_root_span = _CallableStub(_SpanStub)
+        self.current_span = _CallableStub(_SpanStub)
+        self.agent_trace_url = _Stub()
+        self.flush = _CallableStub()
+        self.wrap = _CallableStub()
+        self.set_tags = _CallableStub()
+        self.shutdown = _CallableStub()
+        self.enabled = _Stub()
+        self.context_provider = _Stub()
 
 
 class _SamplingRule:
@@ -204,5 +209,5 @@ class span:
     __slots__ = ["Span"]
 
 
-class tracer:
-    __slots__ = ["Tracer"]
+tracer = _Stub()
+tracer.Tracer = Tracer
