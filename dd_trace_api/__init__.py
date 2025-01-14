@@ -1,3 +1,4 @@
+from sys import audit, addaudithook
 from typing import Type, Optional
 
 
@@ -16,16 +17,34 @@ __all__ = [
     "tracer",
 ]
 
+_DD_HOOK_PREFIX = "dd.hooks."
+
+
+def _hook(name, args):
+    if name.startswith(_DD_HOOK_PREFIX):
+        print(f"Triggered hook with name {name}")
+
+
+addaudithook(_hook)
+
 
 class _Stub:
-    pass
+    def __init__(self, name: Optional[str] = None):
+        self._public_name = name
+
+    def _define(self, name, instance):
+        instance._public_name = name
+        instance._attribute_of = self.__class__.__name__
+        setattr(self, name, instance)
 
 
 class _CallableStub(_Stub):
-    def __init__(self, return_type: Optional[Type] = None):
+    def __init__(self, return_type: Optional[Type] = None, *args):
+        super(_CallableStub, self).__init__(*args)
         self.return_type = return_type or _Stub
 
     def __call__(self, *args, **kwargs):
+        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
         return self.return_type() or None
 
 
@@ -34,6 +53,7 @@ _SpanStub_attributes = {}
 
 class _SpanStub(_Stub):
     def __init__(self):
+        super(_SpanStub, self).__init__()
         self.name = _Stub()
         self.service = _Stub()
         self.span_type = _Stub()
@@ -42,29 +62,29 @@ class _SpanStub(_Stub):
         self.duration_ms = _Stub()
         self.span_id = _Stub()
         self.parent_id = _Stub()
-        self.start = _CallableStub()
+        self._define("start", _CallableStub())
         self.resource = _Stub()
         self.finished = _Stub()
         self.duration = _Stub()
         self.sampled = _Stub()
-        self.finish = _CallableStub()
-        self.set_tag = _CallableStub()
-        self.set_struct_tag = _CallableStub()
-        self.get_struct_tag = _CallableStub()
-        self.set_tag_str = _CallableStub()
-        self.get_tag = _CallableStub()
-        self.get_tags = _CallableStub()
-        self.set_tags = _CallableStub()
-        self.set_metric = _CallableStub()
-        self.set_metrics = _CallableStub()
-        self.get_metric = _CallableStub()
-        self.get_metrics = _CallableStub()
-        self.set_traceback = _CallableStub()
-        self.set_exc_info = _CallableStub()
+        self._define("finish", _CallableStub())
+        self._define("set_tag", _CallableStub())
+        self._define("set_struct_tag", _CallableStub())
+        self._define("get_struct_tag", _CallableStub())
+        self._define("set_tag_str", _CallableStub())
+        self._define("get_tag", _CallableStub())
+        self._define("get_tags", _CallableStub())
+        self._define("set_tags", _CallableStub())
+        self._define("set_metric", _CallableStub())
+        self._define("set_metrics", _CallableStub())
+        self._define("get_metric", _CallableStub())
+        self._define("get_metrics", _CallableStub())
+        self._define("set_traceback", _CallableStub())
+        self._define("set_exc_info", _CallableStub())
         self.context = _Stub()
-        self.link_span = _CallableStub()
-        self.set_link = _CallableStub()
-        self.finish_with_ancestors = _CallableStub()
+        self._define("link_span", _CallableStub())
+        self._define("set_link", _CallableStub())
+        self._define("finish_with_ancestors", _CallableStub())
 
 
 class Span(_SpanStub):
@@ -73,23 +93,22 @@ class Span(_SpanStub):
 
 class Tracer(_Stub):
     def __init__(self):
-        self.sample = _CallableStub()
+        self._define("sample", _CallableStub())
         self.sampler = _Stub()
-        self.on_start_span = _CallableStub()
-        self.deregister_on_start_span = _CallableStub()
+        self._define("on_start_span", _CallableStub())
+        self._define("deregister_on_start_span", _CallableStub())
         self.debug_logging = _Stub()
         self.current_trace_context = _Stub()
-        self.get_log_correlation_context = _CallableStub()
-        self.configure = _CallableStub()
-        self.start_span = _CallableStub()
-        self.trace = _CallableStub()
-        self.current_root_span = _CallableStub(_SpanStub)
-        self.current_span = _CallableStub(_SpanStub)
+        self._define("get_log_correlation_context", _CallableStub())
+        self._define("start_span", _CallableStub(_SpanStub))
+        self._define("trace", _CallableStub())
+        self._define("current_root_span", _CallableStub(_SpanStub))
+        self._define("current_span", _CallableStub(_SpanStub))
         self.agent_trace_url = _Stub()
-        self.flush = _CallableStub()
-        self.wrap = _CallableStub()
-        self.set_tags = _CallableStub()
-        self.shutdown = _CallableStub()
+        self._define("flush", _CallableStub())
+        self._define("wrap", _CallableStub())
+        self._define("set_tags", _CallableStub())
+        self._define("shutdown", _CallableStub())
         self.enabled = _Stub()
         self.context_provider = _Stub()
 
