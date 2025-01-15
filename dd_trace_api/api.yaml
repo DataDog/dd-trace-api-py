@@ -1,0 +1,14 @@
+classes:
+  _SpanStub:
+    methods:
+      finish:
+        kwargs:
+          finish_time:
+            type: "Optional[float]"
+      set_tag:
+        posargs:
+          key:
+            type: "_TagNameType"
+        kwargs:
+          value:
+            type: "Any"

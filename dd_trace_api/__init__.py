@@ -1,5 +1,11 @@
+import os
 from sys import audit, addaudithook
 from typing import Optional, Any, Dict, List, Union, Text, Tuple
+
+import yaml
+
+with open(os.path.join(os.path.dirname(__file__), "api.yaml")) as definition_stream:
+    definition = yaml.safe_load(definition_stream)
 
 _TagNameType = Union[Text, bytes]
 
@@ -81,11 +87,18 @@ _SpanStub_attributes = {}
 class _SpanStub(_Stub):
     def __init__(self):
         super(_SpanStub, self).__init__()
-        self._define("finish", _CallableStub(kwargs={"finish_time": (None, "Optional[float]")}))
-        self._define(
-            "set_tag",
-            _CallableStub(posargs=[("key", "_TagNameType")], kwargs={"value": (None, "Any")}),
-        )
+        for method_name, method_info in definition["classes"]["_SpanStub"]["methods"].items():
+            self._define(
+                method_name,
+                _CallableStub(
+                    posargs=[(name, info["type"]) for name, info in method_info.get("posargs", {}).items()],
+                    kwargs={
+                        name: (info.get("default", None), info["type"])
+                        for name, info in method_info.get("kwargs", {}).items()
+                    },
+                    return_info=("None", "Any"),
+                ),
+            )
         self._define("set_struct_tag", _CallableStub(posargs=[("key", "str"), ("value", "Dict[str, Any]")]))
         self._define("set_tag_str", _CallableStub(posargs=[("key", "_TagNameType"), ("value", "Text")]))
         self._define("set_tags", _CallableStub(posargs=[("tags", "Dict[_TagNameType, Any]")]))
