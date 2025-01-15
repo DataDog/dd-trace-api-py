@@ -1,5 +1,7 @@
 from sys import audit, addaudithook
-from typing import Type, Optional
+from typing import Optional, Any, Dict, Type, List, Union, Text
+
+_TagNameType = Union[Text, bytes]
 
 
 __all__ = [
@@ -39,13 +41,40 @@ class _Stub:
 
 
 class _CallableStub(_Stub):
-    def __init__(self, return_type: Optional[Type] = None, *args):
+    def __init__(
+        self,
+        return_type: Type = _Stub,
+        posargs: Optional[List[str]] = None,
+        kwonly_args: Optional[Dict[str, Any]] = None,
+        *args,
+    ):
         super(_CallableStub, self).__init__(*args)
-        self.return_type = return_type or _Stub
+        self.return_type = return_type
+        self.posargs = posargs
+        self.kwonly_args = kwonly_args
 
     def __call__(self, *args, **kwargs):
+        if not hasattr(self, f"_inner_{self._public_name}"):
+            posarg_defs = ", " + ", ".join(f"{arg}: {_type}" for arg, _type in self.posargs) if self.posargs else ""
+            kwarg_defs = (
+                ", "
+                + ", ".join(f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwonly_args.items())
+                if self.kwonly_args
+                else ""
+            )
+            code = f"""
+def _inner_{self._public_name}(self{posarg_defs}{kwarg_defs}):
+    return {self.return_type.__name__}()
+
+bound_method = _inner_{self._public_name}.__get__(self, self.__class__)
+setattr(self, '_inner_{self._public_name}', bound_method)
+"""
+        print(code)
+        exec(code)
+        inner_fn = getattr(self, f"_inner_{self._public_name}")
+        retval = inner_fn(*args, **kwargs)
         audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
-        return self.return_type() or None
+        return retval
 
 
 _SpanStub_attributes = {}
@@ -68,16 +97,25 @@ class _SpanStub(_Stub):
         self.duration = _Stub()
         self.sampled = _Stub()
         self._define("finish", _CallableStub())
-        self._define("set_tag", _CallableStub())
+        self._define(
+            "set_tag",
+            _CallableStub(posargs=[("key", "_TagNameType")], kwonly_args={"value": (None, "Any")}),
+        )
         self._define("set_struct_tag", _CallableStub())
+        # XXX remove "get" functionality maybe
         self._define("get_struct_tag", _CallableStub())
         self._define("set_tag_str", _CallableStub())
+        # XXX remove "get" functionality maybe
         self._define("get_tag", _CallableStub())
+        # XXX remove "get" functionality maybe
         self._define("get_tags", _CallableStub())
         self._define("set_tags", _CallableStub())
+        # TODO dont expose the difference between metrics and tags
         self._define("set_metric", _CallableStub())
         self._define("set_metrics", _CallableStub())
+        # XXX remove "get" functionality maybe
         self._define("get_metric", _CallableStub())
+        # XXX remove "get" functionality maybe
         self._define("get_metrics", _CallableStub())
         self._define("set_traceback", _CallableStub())
         self._define("set_exc_info", _CallableStub())
@@ -99,11 +137,13 @@ class Tracer(_Stub):
         self._define("deregister_on_start_span", _CallableStub())
         self.debug_logging = _Stub()
         self.current_trace_context = _Stub()
+        # XXX remove "get" functionality maybe
         self._define("get_log_correlation_context", _CallableStub())
-        self._define("start_span", _CallableStub(_SpanStub))
+        # TODO - be specific about allowed arguments
+        self._define("start_span", _CallableStub(return_type=_SpanStub))
         self._define("trace", _CallableStub())
-        self._define("current_root_span", _CallableStub(_SpanStub))
-        self._define("current_span", _CallableStub(_SpanStub))
+        self._define("current_root_span", _CallableStub(return_type=_SpanStub))
+        self._define("current_span", _CallableStub(return_type=_SpanStub))
         self.agent_trace_url = _Stub()
         self._define("flush", _CallableStub())
         self._define("wrap", _CallableStub())
@@ -230,3 +270,5 @@ class span:
 
 tracer = _Stub()
 tracer.Tracer = Tracer
+
+# TODO - add API from dd-trace-py/ddtrace/propagation/__init__.py
