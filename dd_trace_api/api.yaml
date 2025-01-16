@@ -1,6 +1,78 @@
 classes:
+  Pin:
+    staticmethods: {}
+    methods:
+      onto:
+        posargs:
+          obj:
+            type: "Any"
+        kwargs:
+          send:
+            type: "bool"
+            default: "True"
+      remove_from:
+        posargs:
+          obj:
+            type: "Any"
+      clone:
+        kwargs:
+          service:
+            type: "Optional[str]"
+          tags:
+            type: "Optional[Dict[str, str]]"
+          tracer:
+            type: "Tracer"
   _SpanStub:
     methods:
+      set_exc_info:
+        posargs:
+          exc_type:
+            type: "Type[BaseException]"
+          exc_val:
+            type: "BaseException"
+          exc_tb:
+            type: "Optional[TracebackType]"
+      set_link:
+        posargs:
+          trace_id:
+            type: "int"
+          span_id:
+            type: "int"
+        kwargs:
+          tracestate:
+            type: "Optional[str]"
+          flags:
+            type: "Optional[int]"
+          attributes:
+            type: "Optional[Dict[str, Any]]"
+      link_span:
+        posargs:
+          context:
+            type: "context"
+        kwargs:
+          attributes:
+            type: "Optional[Dict[str, Any]]"
+      set_traceback:
+        posargs:
+          limit:
+            type: "Optional[int]"
+      set_tags:
+        posargs:
+          tags:
+            type: "Dict[_TagNameType, Any]"
+      set_tag_str:
+        posargs:
+          key:
+            type: "_TagNameType"
+          value:
+            type: "Text"
+      set_struct_tag:
+        posargs:
+          key:
+            type: "str"
+          value:
+            type: "Dict[str, Any]"
+      finish_with_ancestors: {}
       finish:
         kwargs:
           finish_time:

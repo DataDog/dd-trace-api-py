@@ -1,6 +1,7 @@
 import os
 from sys import audit, addaudithook
-from typing import Optional, Any, Dict, List, Union, Text, Tuple
+from types import TracebackType  # noqa:F401
+from typing import Optional, Any, Dict, List, Union, Text, Tuple, Type  # noqa:F401
 
 import yaml
 
@@ -39,13 +40,12 @@ addaudithook(_hook)
 class _Stub:
     def __init__(self, name: Optional[str] = None):
         self._public_name = name
-
-        if self._public_name is not None:
-            self._build_from_spec(self._public_name)
+        self._build_from_spec(self.__class__.__name__)
 
     def _build_from_spec(self, name):
+        if name not in definition["classes"]:
+            return
         for method_name, method_info in definition["classes"][name]["methods"].items():
-            print(method_info)
             self._define(
                 method_name,
                 _CallableStub(
@@ -103,38 +103,7 @@ _SpanStub_attributes = {}
 
 
 class _SpanStub(_Stub):
-    def __init__(self):
-        super(_SpanStub, self).__init__("_SpanStub")
-        self._define("set_struct_tag", _CallableStub(posargs=[("key", "str"), ("value", "Dict[str, Any]")]))
-        self._define("set_tag_str", _CallableStub(posargs=[("key", "_TagNameType"), ("value", "Text")]))
-        self._define("set_tags", _CallableStub(posargs=[("tags", "Dict[_TagNameType, Any]")]))
-        self._define("set_traceback", _CallableStub(posargs=[("limit", "Optional[int]")]))
-        self._define(
-            "set_exc_info",
-            _CallableStub(
-                posargs=[
-                    ("exc_type", "Type[BaseException]"),
-                    ("exc_val", "BaseException"),
-                    ("exc_tb", "Optional[TracebackType]"),
-                ]
-            ),
-        )
-        self._define(
-            "link_span",
-            _CallableStub(posargs=[("context", "context")], kwargs={"attributes": (None, "Optional[Dict[str, Any]]")}),
-        )
-        self._define(
-            "set_link",
-            _CallableStub(
-                posargs=[("trace_id", "int"), ("span_id", "int")],
-                kwargs={
-                    "tracestate": (None, "Optional[str]"),
-                    "flags": (None, "Optional[int]"),
-                    "attributes": (None, "Optional[Dict[str, Any]]"),
-                },
-            ),
-        )
-        self._define("finish_with_ancestors", _CallableStub())
+    pass
 
 
 class Span(_SpanStub):
@@ -142,8 +111,7 @@ class Span(_SpanStub):
 
 
 class Tracer(_Stub):
-    def __init__(self):
-        super(Tracer, self).__init__("Tracer")
+    pass
 
 
 class _SamplingRule:
@@ -194,8 +162,8 @@ class _CIContextProvider:
     __slots__ = ["activate", "active"]
 
 
-class Pin:
-    __slots__ = ["service", "tags", "tracer", "get_from", "override", "enabled", "onto", "remove_from", "clone"]
+class Pin(_Stub):
+    pass
 
 
 class _TraceFilter:
@@ -233,10 +201,6 @@ class filters:
     __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
 
 
-class pin:
-    __slots__ = ["Pin"]
-
-
 class provider:
     __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
 
@@ -263,5 +227,7 @@ class span:
 
 tracer = _Stub()
 tracer.Tracer = Tracer
+pin = _Stub()
+pin.Pin = Pin
 
 # TODO - add API from dd-trace-py/ddtrace/propagation/__init__.py
