@@ -12,3 +12,68 @@ classes:
         kwargs:
           value:
             type: "Any"
+  Tracer:
+    methods:
+      flush: {}
+      set_tags:
+        posargs:
+          tags:
+            type: "Dict[str, str]"
+      shutdown:
+        posargs:
+          timeout:
+            type: "Optional[float]"
+      start_span:
+        posargs:
+          name:
+            type: "str"
+        kwargs:
+          child_of:
+            type: "Optional[Union[Span, _Context]]"
+          service:
+            type: "Optional[str]"
+          resource:
+            type: "Optional[str]"
+          span_type:
+            type: "Optional[str]"
+          activate:
+            type: "bool"
+            default: "False"
+        return_info:
+          type: "Span"
+          value: "_SpanStub()"
+      current_root_span:
+        return_info:
+          type: "Span"
+          value: "_SpanStub()"
+      current_span:
+        return_info:
+          type: "Span"
+          value: "_SpanStub()"
+      trace:
+        posargs:
+          name:
+            type: "str"
+        kwargs:
+          service:
+            type: "Optional[str]"
+          resource:
+            type: "Optional[str]"
+          span_type:
+            type: "Optional[str]"
+        return_info:
+          type: "Span"
+          value: "_SpanStub()"
+      wrap:
+        kwargs:
+          namne:
+            type: "Optional[str]"
+          service:
+            type: "Optional[str]"
+          resource:
+            type: "Optional[str]"
+          span_type:
+            type: "Optional[str]"
+        return_info:
+          type: "Callable[[AnyCallable], AnyCallable]"
+          value: "lambda: pass"

@@ -40,6 +40,24 @@ class _Stub:
     def __init__(self, name: Optional[str] = None):
         self._public_name = name
 
+        if self._public_name is not None:
+            self._build_from_spec(self._public_name)
+
+    def _build_from_spec(self, name):
+        for method_name, method_info in definition["classes"][name]["methods"].items():
+            print(method_info)
+            self._define(
+                method_name,
+                _CallableStub(
+                    posargs=[(name, info["type"]) for name, info in method_info.get("posargs", {}).items()],
+                    kwargs={
+                        name: (info.get("default", None), info["type"])
+                        for name, info in method_info.get("kwargs", {}).items()
+                    },
+                    return_info=("None", "Any"),
+                ),
+            )
+
     def _define(self, name, instance):
         instance._public_name = name
         instance._attribute_of = self.__class__.__name__
@@ -74,7 +92,7 @@ def _inner_{self._public_name}(self{posarg_defs}{kwarg_defs}) -> {self.return_in
 bound_method = _inner_{self._public_name}.__get__(self, self.__class__)
 setattr(self, '_inner_{self._public_name}', bound_method)
 """
-        exec(code)
+            exec(code)
         inner_fn = getattr(self, f"_inner_{self._public_name}")
         retval = inner_fn(*args, **kwargs)
         audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
@@ -86,19 +104,7 @@ _SpanStub_attributes = {}
 
 class _SpanStub(_Stub):
     def __init__(self):
-        super(_SpanStub, self).__init__()
-        for method_name, method_info in definition["classes"]["_SpanStub"]["methods"].items():
-            self._define(
-                method_name,
-                _CallableStub(
-                    posargs=[(name, info["type"]) for name, info in method_info.get("posargs", {}).items()],
-                    kwargs={
-                        name: (info.get("default", None), info["type"])
-                        for name, info in method_info.get("kwargs", {}).items()
-                    },
-                    return_info=("None", "Any"),
-                ),
-            )
+        super(_SpanStub, self).__init__("_SpanStub")
         self._define("set_struct_tag", _CallableStub(posargs=[("key", "str"), ("value", "Dict[str, Any]")]))
         self._define("set_tag_str", _CallableStub(posargs=[("key", "_TagNameType"), ("value", "Text")]))
         self._define("set_tags", _CallableStub(posargs=[("tags", "Dict[_TagNameType, Any]")]))
@@ -137,59 +143,7 @@ class Span(_SpanStub):
 
 class Tracer(_Stub):
     def __init__(self):
-        self._define(
-            "start_span",
-            _CallableStub(
-                return_info=("_SpanStub()", "Span"),
-                posargs=[("name", "str")],
-                kwargs={
-                    "child_of": (None, "Optional[Union[Span, _Context]]"),
-                    "service": (None, "Optional[str]"),
-                    "resource": (None, "Optional[str]"),
-                    "span_type": (None, "Optional[str]"),
-                    "activate": (False, "bool"),
-                },
-            ),
-        )
-        self._define(
-            "trace",
-            _CallableStub(
-                return_info=("_SpanStub()", "Span"),
-                posargs=[("name", "str")],
-                kwargs={
-                    "service": (None, "Optional[str]"),
-                    "resource": (None, "Optional[str]"),
-                    "span_type": (None, "Optional[str]"),
-                },
-            ),
-        )
-        self._define(
-            "current_root_span",
-            _CallableStub(
-                return_info=("_SpanStub()", "Span"),
-            ),
-        )
-        self._define(
-            "current_span",
-            _CallableStub(
-                return_info=("_SpanStub()", "Span"),
-            ),
-        )
-        self._define("flush", _CallableStub())
-        self._define(
-            "wrap",
-            _CallableStub(
-                return_info=("lambda: pass", "Callable[[AnyCallable], AnyCallable]"),
-                kwargs={
-                    "name": (None, "Optional[str]"),
-                    "service": (None, "Optional[str]"),
-                    "resource": (None, "Optional[str]"),
-                    "span_type": (None, "Optional[str]"),
-                },
-            ),
-        )
-        self._define("set_tags", _CallableStub(posargs=[("tags", "Dict[str, str]")]))
-        self._define("shutdown", _CallableStub(posargs=[("timeout", "Optional[float]")]))
+        super(Tracer, self).__init__("Tracer")
 
 
 class _SamplingRule:
