@@ -1,6 +1,22 @@
 classes:
+  HTTPPropagator:
+    methods:
+      inject:
+        posargs:
+          span_context:
+            type: "Context"
+          headers:
+            type: "Dict[str, str]"
+        kwargs:
+          non_active_span:
+            type: "Optional[Span]"
+        static: true
+      extract:
+        posargs:
+          headers:
+            type: "Any"
+        static: true
   Pin:
-    staticmethods: {}
     methods:
       onto:
         posargs:
