@@ -1,30 +1,55 @@
 attributes:
   tracer:
     attributes:
-      tracer: "Tracer"
+      Tracer: "Tracer"
   pin:
     attributes:
       Pin: "Pin"
   span:
     attributes:
       Span: "Span"
-  HTTPPropagator:
-    methods:
-      inject:
-        posargs:
-          span_context:
-            type: "_Context"
-          headers:
-            type: "Dict[str, str]"
-        kwargs:
-          non_active_span:
-            type: "Optional[Span]"
-        static: true
-      extract:
-        posargs:
-          headers:
-            type: "Any"
-        static: true
+  #context:
+  #  attributes:
+  #    Context: "_Context"
+  #data_streams:
+  #  methods:
+  #    set_consume_checkpoint:
+  #      posargs:
+  #        typ:
+  #          type: "str"
+  #        source:
+  #          type: "str"
+  #        carrier_get:
+  #          type: "Callable"
+  #    set_produce_checkpoint:
+  #      posargs:
+  #        typ:
+  #          type: "str"
+  #        target:
+  #          type: "str"
+  #        carrier_set:
+  #          type: "Callable"
+  #propagation:
+  #  attributes:
+  #    http:
+  #      attributes:
+  #        HTTPPropagator:
+  #          methods:
+  #            inject:
+  #              posargs:
+  #                span_context:
+  #                  type: "_Context"
+  #                headers:
+  #                  type: "Dict[str, str]"
+  #              kwargs:
+  #                non_active_span:
+  #                  type: "Optional[Span]"
+  #              static: true
+  #            extract:
+  #              posargs:
+  #                headers:
+  #                  type: "Any"
+  #              static: true
   Pin:
     methods:
       onto:
@@ -71,9 +96,9 @@ attributes:
           attributes:
             type: "Optional[Dict[str, Any]]"
       link_span:
-        posargs:
-          context:
-            type: "context"
+        #posargs:
+        #  context:
+        #    type: "context"
         kwargs:
           attributes:
             type: "Optional[Dict[str, Any]]"

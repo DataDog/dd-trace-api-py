@@ -1,7 +1,7 @@
 import os
 from sys import audit, addaudithook
 from types import TracebackType  # noqa:F401
-from typing import Optional, Any, Dict, List, Union, Text, Tuple, Type  # noqa:F401
+from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type  # noqa:F401
 
 import yaml
 
@@ -22,6 +22,7 @@ __all__ = [
     "provider",
     "span",
     "tracer",
+    "propagation",
 ]
 
 _DD_HOOK_PREFIX = "dd.hooks."
@@ -63,12 +64,6 @@ class _Stub:
         setattr(self, name, instance)
 
 
-def _generate(self):
-    if isinstance(self, _CallableStub):
-        return _generate_callable_stub(self)
-    return _generate_class(self)
-
-
 def _generate_class(name):
     class_info = definition["attributes"].get(name, {})
     static_method_lines = []
@@ -93,9 +88,9 @@ def _generate_class(name):
     code = f"""
 class {name}(_Stub):
     {static_method_code or "pass"}
-
-globals()["{name}"] = {name}
+globals()['{name}'] = {name}
     """
+    print(code)
     exec(code)
 
 
@@ -133,14 +128,11 @@ class _CallableStub(_Stub):
         self.static = static
 
     def __call__(self, *args, **kwargs):
-        _generate(self)
+        _generate_callable_stub(self)
         inner_fn = getattr(self, f"_inner_{self._public_name}")
         retval = inner_fn(*args, **kwargs)
         audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
         return retval
-
-
-_SpanStub_attributes = {}
 
 
 class _BaseContextProvider:
@@ -175,36 +167,42 @@ class _Context:
     ]
 
 
-def _generate_object(name, info):
+def _generate_fake_module(name, info, parent_qualname):
     attrs_lines = []
-    for attribute_name, attribute_value in info.items():
+    for attribute_name, attribute_value in info["attributes"].items():
+        attribute_qualname = name + "." + attribute_name
         attrs_lines.append(
             f"""
-{attribute_name} = {attribute_value}
+{attribute_qualname} = {attribute_name}
         """
         )
     attrs_code = "\n".join(attrs_lines)
+    parent_code = f"globals()['{name}']" if "." not in parent_qualname else parent_qualname
     code = f"""
 {name} = _Stub()
 {attrs_code}
-globals()['{name}'] = name
+{parent_code} = {name}
     """
+    print(code)
     exec(code)
 
 
-for attribute_name, attribute_info in definition["attributes"].items():
-    if "methods" in attribute_info:
-        _generate(attribute_name)
-    else:
-        _generate_object(attribute_name, attribute_info)
+def _build_classes(node, current_obj_qualname, modules=False):
+    for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
+        if "methods" in node_data:
+            _generate_class(node_name)
+        elif "attributes" in node_data:
+            _build_classes(node_data, current_obj_qualname)
 
 
-class context:
-    __slots__ = ["Context"]
-
-
-class data_streams:
-    __slots__ = ["set_consume_checkpoint", "set_produce_checkpoint"]
+def _build_modules(node, current_obj_qualname, modules=False):
+    for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
+        if "attributes" in node_data:
+            _build_modules(node_data, current_obj_qualname)
+            new_name = node_name
+            if current_obj_qualname:
+                new_name = current_obj_qualname + "." + node_name
+            _generate_fake_module(node_name, node_data, new_name)
 
 
 class filters:
@@ -213,3 +211,7 @@ class filters:
 
 class provider:
     __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
+
+
+_build_classes(definition, "")
+_build_modules(definition, "")
