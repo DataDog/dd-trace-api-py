@@ -64,6 +64,44 @@ class _Stub:
 
 
 def _generate(self):
+    if isinstance(self, _CallableStub):
+        return _generate_callable_stub(self)
+    return _generate_class(self)
+
+
+def _generate_class(name):
+    class_info = definition["classes"].get(name, {})
+    static_method_lines = []
+    for method_name, method_info in class_info.get("methods", {}).items():
+        if not method_info.get("static", False):
+            continue
+        return_info = method_info.get("return_info", {})
+        posarg_defs = [f"{arg}: {info['type']}" for arg, info in method_info.get("posargs", {}).items()]
+        kwarg_defs = [
+            f"{arg}:{info.get('_type')}={info.get('default').__repr__()}"
+            for arg, info in method_info.get("kwargs", {}).items()
+        ]
+        params = ", ".join(posarg_defs + kwarg_defs)
+        method_lines = f"""
+    @staticmethod
+    def {method_name}({params}) -> {return_info.get('type')}:
+        return {return_info.get('value')}
+        """
+        static_method_lines.append(method_lines)
+    static_method_code = "\n".join(static_method_lines)
+    code = f"""
+class {name}(_Stub):
+    {static_method_code}
+
+globals()["{name}"] = {name}
+    """
+    print(code)
+    exec(code)
+
+
+def _generate_callable_stub(self):
+    if hasattr(self, f"_inner_{self._public_name}"):
+        return
     posarg_defs = [f"{arg}: {_type}" for arg, _type in self.posargs]
     kwarg_defs = [f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwargs.items()]
     self_param = ["self" if not self.static else ""]
@@ -95,8 +133,7 @@ class _CallableStub(_Stub):
         self.static = static
 
     def __call__(self, *args, **kwargs):
-        if not hasattr(self, f"_inner_{self._public_name}"):
-            _generate(self)
+        _generate(self)
         inner_fn = getattr(self, f"_inner_{self._public_name}")
         retval = inner_fn(*args, **kwargs)
         audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
@@ -138,10 +175,6 @@ class Pin(_Stub):
     pass
 
 
-class HTTPPropagator(_Stub):
-    pass
-
-
 class _TraceFilter:
     __slots__ = ["process_trace"]
 
@@ -156,6 +189,9 @@ class _Context:
         "remove_baggage_item",
         "remove_all_baggage_items",
     ]
+
+
+_generate("HTTPPropagator")
 
 
 class context:
