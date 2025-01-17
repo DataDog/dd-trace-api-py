@@ -64,8 +64,7 @@ class _Stub:
         setattr(self, name, instance)
 
 
-def _generate_class(name):
-    class_info = definition["attributes"].get(name, {})
+def _generate_class(name, class_info):
     static_method_lines = []
     for method_name, method_info in class_info.get("methods", {}).items():
         if not method_info.get("static", False):
@@ -190,7 +189,7 @@ def _generate_fake_module(name, info, parent_qualname):
 def _build_classes(node, current_obj_qualname, modules=False):
     for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
         if "methods" in node_data:
-            _generate_class(node_name)
+            _generate_class(node_name, node_data)
         elif "attributes" in node_data:
             _build_classes(node_data, current_obj_qualname)
 

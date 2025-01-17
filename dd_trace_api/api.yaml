@@ -29,27 +29,27 @@ attributes:
   #          type: "str"
   #        carrier_set:
   #          type: "Callable"
-  #propagation:
-  #  attributes:
-  #    http:
-  #      attributes:
-  #        HTTPPropagator:
-  #          methods:
-  #            inject:
-  #              posargs:
-  #                span_context:
-  #                  type: "_Context"
-  #                headers:
-  #                  type: "Dict[str, str]"
-  #              kwargs:
-  #                non_active_span:
-  #                  type: "Optional[Span]"
-  #              static: true
-  #            extract:
-  #              posargs:
-  #                headers:
-  #                  type: "Any"
-  #              static: true
+  propagation:
+    attributes:
+      http:
+        attributes:
+          HTTPPropagator:
+            methods:
+              inject:
+                posargs:
+                  span_context:
+                    type: "_Context"
+                  headers:
+                    type: "Dict[str, str]"
+                kwargs:
+                  non_active_span:
+                    type: "Optional[Span]"
+                static: true
+              extract:
+                posargs:
+                  headers:
+                    type: "Any"
+                static: true
   Pin:
     methods:
       onto:
