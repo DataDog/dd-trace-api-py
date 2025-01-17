@@ -1,4 +1,13 @@
-classes:
+attributes:
+  tracer:
+    attributes:
+      tracer: "Tracer"
+  pin:
+    attributes:
+      Pin: "Pin"
+  span:
+    attributes:
+      Span: "Span"
   HTTPPropagator:
     methods:
       inject:
@@ -38,7 +47,7 @@ classes:
             type: "Optional[Dict[str, str]]"
           tracer:
             type: "Tracer"
-  _SpanStub:
+  Span:
     methods:
       set_exc_info:
         posargs:
@@ -129,15 +138,15 @@ classes:
             default: "False"
         return_info:
           type: "Span"
-          value: "_SpanStub()"
+          value: "Span()"
       current_root_span:
         return_info:
           type: "Span"
-          value: "_SpanStub()"
+          value: "Span()"
       current_span:
         return_info:
           type: "Span"
-          value: "_SpanStub()"
+          value: "Span()"
       trace:
         posargs:
           name:
@@ -151,7 +160,7 @@ classes:
             type: "Optional[str]"
         return_info:
           type: "Span"
-          value: "_SpanStub()"
+          value: "Span()"
       wrap:
         kwargs:
           namne:

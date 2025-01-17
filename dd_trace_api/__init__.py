@@ -41,9 +41,9 @@ class _Stub:
         self._build_from_spec(self.__class__.__name__)
 
     def _build_from_spec(self, name):
-        if name not in definition["classes"]:
+        if name not in definition["attributes"]:
             return
-        for method_name, method_info in definition["classes"][name]["methods"].items():
+        for method_name, method_info in definition["attributes"][name]["methods"].items():
             self._define(
                 method_name,
                 _CallableStub(
@@ -70,7 +70,7 @@ def _generate(self):
 
 
 def _generate_class(name):
-    class_info = definition["classes"].get(name, {})
+    class_info = definition["attributes"].get(name, {})
     static_method_lines = []
     for method_name, method_info in class_info.get("methods", {}).items():
         if not method_info.get("static", False):
@@ -85,6 +85,7 @@ def _generate_class(name):
         method_lines = f"""
     @staticmethod
     def {method_name}({params}) -> {return_info.get('type')}:
+        audit("{_DD_HOOK_PREFIX}{name or '_Stub'}.{method_name or 'foo'}")
         return {return_info.get('value')}
         """
         static_method_lines.append(method_lines)
@@ -174,12 +175,28 @@ class _Context:
     ]
 
 
-for class_name in definition["classes"]:
-    _generate(class_name)
+def _generate_object(name, info):
+    attrs_lines = []
+    for attribute_name, attribute_value in info.items():
+        attrs_lines.append(
+            f"""
+{attribute_name} = {attribute_value}
+        """
+        )
+    attrs_code = "\n".join(attrs_lines)
+    code = f"""
+{name} = _Stub()
+{attrs_code}
+globals()['{name}'] = name
+    """
+    exec(code)
 
 
-class Span(_SpanStub):  # noqa
-    pass
+for attribute_name, attribute_info in definition["attributes"].items():
+    if "methods" in attribute_info:
+        _generate(attribute_name)
+    else:
+        _generate_object(attribute_name, attribute_info)
 
 
 class context:
@@ -196,13 +213,3 @@ class filters:
 
 class provider:
     __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
-
-
-class span:
-    __slots__ = ["Span"]
-
-
-tracer = _Stub()
-tracer.Tracer = Tracer
-pin = _Stub()
-pin.Pin = Pin
