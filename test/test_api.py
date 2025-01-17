@@ -10,10 +10,7 @@ with open(os.path.join(os.path.dirname(dd_trace_api.__file__), "api.yaml")) as d
 
 
 def _traverse(node, obj_under_test):
-    print(f"obj: {obj_under_test.__class__.__name__}")
     for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
-        print(f"node name: {node_name}")
-        print(f"node data: {node_data}")
         try:
             _attribute = getattr(obj_under_test, node_name)
         except AttributeError:
@@ -23,7 +20,6 @@ def _traverse(node, obj_under_test):
                 posargs_count = len(method_info.get("posargs", {}))
                 kwargs = {k: None for k in method_info.get("kwargs", {}).keys()}
                 posargs = [] + [None] * posargs_count
-                print(f"method: {method_info}")
                 if not method_info.get("static", False):
                     try:
                         callee = _attribute()

@@ -8,27 +8,24 @@ attributes:
   span:
     attributes:
       Span: "Span"
-  #context:
-  #  attributes:
-  #    Context: "_Context"
-  #data_streams:
-  #  methods:
-  #    set_consume_checkpoint:
-  #      posargs:
-  #        typ:
-  #          type: "str"
-  #        source:
-  #          type: "str"
-  #        carrier_get:
-  #          type: "Callable"
-  #    set_produce_checkpoint:
-  #      posargs:
-  #        typ:
-  #          type: "str"
-  #        target:
-  #          type: "str"
-  #        carrier_set:
-  #          type: "Callable"
+  data_streams:
+    methods:
+      set_consume_checkpoint:
+        posargs:
+          typ:
+            type: "str"
+          source:
+            type: "str"
+          carrier_get:
+            type: "Callable"
+      set_produce_checkpoint:
+        posargs:
+          typ:
+            type: "str"
+          target:
+            type: "str"
+          carrier_set:
+            type: "Callable"
   propagation:
     attributes:
       http:
@@ -188,7 +185,7 @@ attributes:
           value: "Span()"
       wrap:
         kwargs:
-          namne:
+          name:
             type: "Optional[str]"
           service:
             type: "Optional[str]"
