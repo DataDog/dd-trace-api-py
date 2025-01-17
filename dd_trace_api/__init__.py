@@ -91,11 +91,10 @@ def _generate_class(name):
     static_method_code = "\n".join(static_method_lines)
     code = f"""
 class {name}(_Stub):
-    {static_method_code}
+    {static_method_code or "pass"}
 
 globals()["{name}"] = {name}
     """
-    print(code)
     exec(code)
 
 
@@ -143,18 +142,6 @@ class _CallableStub(_Stub):
 _SpanStub_attributes = {}
 
 
-class _SpanStub(_Stub):
-    pass
-
-
-class Span(_SpanStub):
-    pass
-
-
-class Tracer(_Stub):
-    pass
-
-
 class _BaseContextProvider:
     __slots__ = ["activate", "active"]
 
@@ -169,10 +156,6 @@ class _DefaultContextProvider:
 
 class _CIContextProvider:
     __slots__ = ["activate", "active"]
-
-
-class Pin(_Stub):
-    pass
 
 
 class _TraceFilter:
@@ -191,7 +174,12 @@ class _Context:
     ]
 
 
-_generate("HTTPPropagator")
+for class_name in definition["classes"]:
+    _generate(class_name)
+
+
+class Span(_SpanStub):  # noqa
+    pass
 
 
 class context:
