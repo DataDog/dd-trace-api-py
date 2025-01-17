@@ -63,6 +63,22 @@ class _Stub:
         setattr(self, name, instance)
 
 
+def _generate(self):
+    posarg_defs = [f"{arg}: {_type}" for arg, _type in self.posargs]
+    kwarg_defs = [f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwargs.items()]
+    self_param = ["self" if not self.static else ""]
+    params = ", ".join(self_param + posarg_defs + kwarg_defs)
+    code = f"""
+def _inner_{self._public_name}({params}) -> {self.return_info[1]}:
+    return {self.return_info[0]}
+"""
+    code += f"""
+bound_method = _inner_{self._public_name}.__get__(self, self.__class__)
+setattr(self, '_inner_{self._public_name}', bound_method)
+"""
+    exec(code)
+
+
 class _CallableStub(_Stub):
     def __init__(
         self,
@@ -80,25 +96,7 @@ class _CallableStub(_Stub):
 
     def __call__(self, *args, **kwargs):
         if not hasattr(self, f"_inner_{self._public_name}"):
-            posarg_defs = ", ".join(f"{arg}: {_type}" for arg, _type in self.posargs) if self.posargs else ""
-            kwarg_defs = (
-                ", ".join(f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwargs.items())
-                if self.kwargs
-                else ""
-            )
-            self_param = "self" if self.static else ""
-            params = ", ".join(self_param + posarg_defs + kwarg_defs)
-            code = f"""
-{'@staticmethod' if self.static else ''}
-def _inner_{self._public_name}({params}) -> {self.return_info[1]}:
-    return {self.return_info[0]}
-"""
-            if not self.static:
-                code += f"""
-bound_method = _inner_{self._public_name}.__get__(self, self.__class__)
-setattr(self, '_inner_{self._public_name}', bound_method)
-"""
-            exec(code)
+            _generate(self)
         inner_fn = getattr(self, f"_inner_{self._public_name}")
         retval = inner_fn(*args, **kwargs)
         audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
