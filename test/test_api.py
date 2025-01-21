@@ -1,12 +1,24 @@
 import os
+from sys import addaudithook
 
 import pytest
 import yaml
 
 import dd_trace_api
 
-with open(os.path.join(os.path.dirname(dd_trace_api.__file__), "api.yaml")) as definition_stream:
+with open(os.path.join(os.path.dirname(__file__), "..", "api.yaml")) as definition_stream:
     definition = yaml.safe_load(definition_stream)
+
+
+_DD_HOOK_PREFIX = "dd.hooks."
+
+
+def _hook(name, args):
+    if name.startswith(_DD_HOOK_PREFIX):
+        print(f"Triggered hook with name {name}")
+
+
+addaudithook(_hook)
 
 
 def _traverse(node, obj_under_test):

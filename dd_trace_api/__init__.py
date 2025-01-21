@@ -1,16 +1,15 @@
-import os
-from sys import addaudithook, audit  # noqa:F401
+
+from sys import audit
 from types import TracebackType  # noqa:F401
 from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, TypeVar, Type  # noqa:F401
 
-import yaml
 
-with open(os.path.join(os.path.dirname(__file__), "api.yaml")) as definition_stream:
-    definition = yaml.safe_load(definition_stream)
+class _Stub:
+    pass
+
 
 _TagNameType = Union[Text, bytes]
 AnyCallable = TypeVar("AnyCallable", bound=Callable)
-
 
 __all__ = [
     "Pin",
@@ -25,117 +24,14 @@ __all__ = [
     "tracer",
     "propagation",
 ]
-
 _DD_HOOK_PREFIX = "dd.hooks."
 
-
-def _hook(name, args):
-    if name.startswith(_DD_HOOK_PREFIX):
-        print(f"Triggered hook with name {name}")
+class filters:
+    __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
 
 
-addaudithook(_hook)
-
-
-class _Stub:
-    def __init__(self, name: Optional[str] = None):
-        self._public_name = name
-        # self._build_from_spec(self.__class__.__name__)
-
-    def _build_from_spec(self, name):
-        if name not in definition["attributes"]:
-            return
-        for method_name, method_info in definition["attributes"][name]["methods"].items():
-            setattr(
-                self,
-                method_name,
-                _CallableStub(
-                    posargs=[(name, info["type"]) for name, info in method_info.get("posargs", {}).items()],
-                    kwargs={
-                        name: (info.get("default", None), info["type"])
-                        for name, info in method_info.get("kwargs", {}).items()
-                    },
-                    return_info=("None", "Any"),
-                    static=method_info.get("static", False),
-                    public_name=method_name,
-                    attribute_of=self.__class__.__name__,
-                ),
-            )
-
-
-class _CallableStub(_Stub):
-    def __init__(
-        self,
-        return_info: Tuple[str, str] = ("None", "Any"),
-        posargs: Optional[List[Tuple[str, str]]] = None,
-        kwargs: Optional[Dict[Any, str]] = None,
-        static: bool = False,
-        public_name: str = "",
-        attribute_of: str = "_Stub",
-        *args,
-    ):
-        super(_CallableStub, self).__init__(*args)
-        self.return_info = return_info
-        self.posargs = posargs
-        self.kwargs = kwargs
-        self.static = static
-        self._public_name = public_name
-        self._attribute_of = attribute_of
-        """
-        self.inner_fn = _generate_callable_stub(self)
-
-    def __call__(self, *args, **kwargs):
-        retval = self.inner_fn(*args, **kwargs)
-        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of}.{self._public_name}")
-        return retval
-        """
-
-
-def _generate_class(name, class_info):
-    method_lines = []
-    for method_name, method_info in class_info.get("methods", {}).items():
-        is_static = method_info.get("static", False)
-        return_info = method_info.get("return_info", {})
-        posarg_defs = [f"{arg}: {info['type']}" for arg, info in method_info.get("posargs", {}).items()]
-        kwarg_defs = [
-            f"{arg}:{info.get('_type')}={info.get('default').__repr__()}"
-            for arg, info in method_info.get("kwargs", {}).items()
-        ]
-        self_param = ["self"] if not is_static else []
-        params = ", ".join(self_param + posarg_defs + kwarg_defs)
-        method_lines.append(
-            f"""
-    {"@staticmethod" if is_static else ""}
-    def {method_name}({params}) -> {return_info.get('type')}:
-        audit("{_DD_HOOK_PREFIX}{name or '_Stub'}.{method_name or 'foo'}")
-        return {return_info.get('value')}
-        """
-        )
-    methods_code = "\n".join(method_lines)
-    code = f"""
-class {name}(_Stub):
-    {methods_code or "pass"}
-globals()['{name}'] = {name}
-    """
-    print(code)
-    exec(code)
-
-
-def _generate_callable_stub(self):
-    posarg_defs = [f"{arg}: {_type}" for arg, _type in self.posargs]
-    kwarg_defs = [f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwargs.items()]
-    self_param = ["self" if not self.static else ""]
-    params = ", ".join(self_param + posarg_defs + kwarg_defs)
-    code = f"""
-def {self._public_name}({params}) -> {self.return_info[1]}:
-    return {self.return_info[0]}
-"""
-    code += f"""
-bound_method = {self._public_name}.__get__(self, self.__class__)
-setattr(self, '{self._public_name}', bound_method)
-"""
-    exec(code)
-    return getattr(self, self._public_name)
+class provider:
+    __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
 
 
 class _BaseContextProvider:
@@ -168,55 +64,209 @@ class _Context:
         "remove_baggage_item",
         "remove_all_baggage_items",
     ]
+    
 
+class data_streams():
+    
+    
+    def set_consume_checkpoint(self, typ: str, source: str, carrier_get: Callable) -> None:
+        audit(_DD_HOOK_PREFIX + "data_streams.set_consume_checkpoint")
+        return None
+        
 
-def _generate_module(module_name, module_info):
-    """Generate a stub that is not intended to be instantiated in client code"""
-    attrs_code = "\n".join(
-        [
-            f"""
-{module_name + "." + attribute_name} = {attribute_name}
-    """
-            for attribute_name, attribute_value in module_info.get("attributes", {}).items()
-        ]
-    )
-    global_assignment = f"globals()['{module_name}']"
-    code = f"""
-{module_name} = _Stub()
-{attrs_code}
-{global_assignment} = {module_name}
-    """
-    exec(code)
+    
+    def set_produce_checkpoint(self, typ: str, target: str, carrier_set: Callable) -> None:
+        audit(_DD_HOOK_PREFIX + "data_streams.set_produce_checkpoint")
+        return None
+        
+globals()['data_streams'] = data_streams
+    
 
+class HTTPPropagator():
+    
+    @staticmethod
+    def inject(span_context: _Context, headers: Dict[str, str], non_active_span:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject")
+        return None
+        
 
-def _iterate_node_members(node):
-    for member_info in node.get("attributes", node.get("methods", {})).items():
-        yield member_info
+    @staticmethod
+    def extract(headers: Any) -> None:
+        audit(_DD_HOOK_PREFIX + "HTTPPropagator.extract")
+        return None
+        
+globals()['HTTPPropagator'] = HTTPPropagator
+    
 
+http = _Stub()
 
-def _build_classes(node):
-    modules_to_generate = []
-    for member_name, member_data in _iterate_node_members(node):
-        if "methods" in member_data:
-            _generate_class(member_name, member_data)
-        if "attributes" in member_data:
-            _build_classes(member_data)
-            modules_to_generate.append((member_name, member_data))
-    # this has to happen in a second pass because some of the modules reference generated classes
-    for member_name, member_data in modules_to_generate:
-        _generate_module(member_name, member_data)
+setattr(http, "HTTPPropagator", HTTPPropagator)
+    
+globals()['http'] = http
+    
 
+class Pin():
+    
+    
+    def onto(self, obj: Any, send:None=True) -> None:
+        audit(_DD_HOOK_PREFIX + "Pin.onto")
+        return None
+        
 
-def _generate_api(node):
-    _build_classes(node)
+    
+    def remove_from(self, obj: Any) -> None:
+        audit(_DD_HOOK_PREFIX + "Pin.remove_from")
+        return None
+        
 
+    
+    def clone(self, service:None=None, tags:None=None, tracer:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "Pin.clone")
+        return None
+        
+globals()['Pin'] = Pin
+    
 
-class filters:
-    __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
+class Span():
+    
+    
+    def set_exc_info(self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Optional[TracebackType]) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_exc_info")
+        return None
+        
 
+    
+    def set_link(self, trace_id: int, span_id: int, tracestate:None=None, flags:None=None, attributes:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_link")
+        return None
+        
 
-class provider:
-    __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
+    
+    def link_span(self, attributes:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.link_span")
+        return None
+        
 
+    
+    def set_traceback(self, limit: Optional[int]) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_traceback")
+        return None
+        
 
-_generate_api(definition)
+    
+    def set_tags(self, tags: Dict[_TagNameType, Any]) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_tags")
+        return None
+        
+
+    
+    def set_tag_str(self, key: _TagNameType, value: Text) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_tag_str")
+        return None
+        
+
+    
+    def set_struct_tag(self, key: str, value: Dict[str, Any]) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_struct_tag")
+        return None
+        
+
+    
+    def finish_with_ancestors(self) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.finish_with_ancestors")
+        return None
+        
+
+    
+    def finish(self, finish_time:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.finish")
+        return None
+        
+
+    
+    def set_tag(self, key: _TagNameType, value:None=None) -> None:
+        audit(_DD_HOOK_PREFIX + "Span.set_tag")
+        return None
+        
+globals()['Span'] = Span
+    
+
+class Tracer():
+    
+    
+    def flush(self) -> None:
+        audit(_DD_HOOK_PREFIX + "Tracer.flush")
+        return None
+        
+
+    
+    def set_tags(self, tags: Dict[str, str]) -> None:
+        audit(_DD_HOOK_PREFIX + "Tracer.set_tags")
+        return None
+        
+
+    
+    def shutdown(self, timeout: Optional[float]) -> None:
+        audit(_DD_HOOK_PREFIX + "Tracer.shutdown")
+        return None
+        
+
+    
+    def start_span(self, name: str, child_of:None=None, service:None=None, resource:None=None, span_type:None=None, activate:None='False') -> Span:
+        audit(_DD_HOOK_PREFIX + "Tracer.start_span")
+        return Span()
+        
+
+    
+    def current_root_span(self) -> Span:
+        audit(_DD_HOOK_PREFIX + "Tracer.current_root_span")
+        return Span()
+        
+
+    
+    def current_span(self) -> Span:
+        audit(_DD_HOOK_PREFIX + "Tracer.current_span")
+        return Span()
+        
+
+    
+    def trace(self, name: str, service:None=None, resource:None=None, span_type:None=None) -> Span:
+        audit(_DD_HOOK_PREFIX + "Tracer.trace")
+        return Span()
+        
+
+    
+    def wrap(self, name:None=None, service:None=None, resource:None=None, span_type:None=None) -> Callable[[AnyCallable], AnyCallable]:
+        audit(_DD_HOOK_PREFIX + "Tracer.wrap")
+        return lambda: None
+        
+globals()['Tracer'] = Tracer
+    
+
+tracer = _Stub()
+
+setattr(tracer, "Tracer", Tracer)
+    
+globals()['tracer'] = tracer
+    
+
+pin = _Stub()
+
+setattr(pin, "Pin", Pin)
+    
+globals()['pin'] = pin
+    
+
+span = _Stub()
+
+setattr(span, "Span", Span)
+    
+globals()['span'] = span
+    
+
+propagation = _Stub()
+
+setattr(propagation, "http", http)
+    
+globals()['propagation'] = propagation
+    
