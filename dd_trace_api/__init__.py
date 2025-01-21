@@ -45,7 +45,8 @@ class _Stub:
         if name not in definition["attributes"]:
             return
         for method_name, method_info in definition["attributes"][name]["methods"].items():
-            self._define(
+            setattr(
+                self,
                 method_name,
                 _CallableStub(
                     posargs=[(name, info["type"]) for name, info in method_info.get("posargs", {}).items()],
@@ -55,13 +56,36 @@ class _Stub:
                     },
                     return_info=("None", "Any"),
                     static=method_info.get("static", False),
+                    public_name=method_name,
+                    attribute_of=self.__class__.__name__,
                 ),
             )
 
-    def _define(self, name, instance):
-        instance._public_name = name
-        instance._attribute_of = self.__class__.__name__
-        setattr(self, name, instance)
+
+class _CallableStub(_Stub):
+    def __init__(
+        self,
+        return_info: Tuple[str, str] = ("None", "Any"),
+        posargs: Optional[List[Tuple[str, str]]] = None,
+        kwargs: Optional[Dict[Any, str]] = None,
+        static: bool = False,
+        public_name: str = "",
+        attribute_of: str = "",
+        *args,
+    ):
+        super(_CallableStub, self).__init__(*args)
+        self.return_info = return_info
+        self.posargs = posargs
+        self.kwargs = kwargs
+        self.static = static
+        self._public_name = public_name
+        self._attribute_of = attribute_of
+        self.inner_fn = _generate_callable_stub(self)
+
+    def __call__(self, *args, **kwargs):
+        retval = self.inner_fn(*args, **kwargs)
+        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
+        return retval
 
 
 def _generate_class(name, class_info):
@@ -93,44 +117,20 @@ globals()['{name}'] = {name}
 
 
 def _generate_callable_stub(self):
-    if hasattr(self, f"_inner_{self._public_name}"):
-        return
     posarg_defs = [f"{arg}: {_type}" for arg, _type in self.posargs]
     kwarg_defs = [f"{arg}:{_type}={default.__repr__()}" for arg, (default, _type) in self.kwargs.items()]
     self_param = ["self" if not self.static else ""]
     params = ", ".join(self_param + posarg_defs + kwarg_defs)
     code = f"""
-def _inner_{self._public_name}({params}) -> {self.return_info[1]}:
+def {self._public_name}({params}) -> {self.return_info[1]}:
     return {self.return_info[0]}
 """
     code += f"""
-bound_method = _inner_{self._public_name}.__get__(self, self.__class__)
-setattr(self, '_inner_{self._public_name}', bound_method)
+bound_method = {self._public_name}.__get__(self, self.__class__)
+setattr(self, '{self._public_name}', bound_method)
 """
     exec(code)
-
-
-class _CallableStub(_Stub):
-    def __init__(
-        self,
-        return_info: Tuple[str, str] = ("None", "Any"),
-        posargs: Optional[List[Tuple[str, str]]] = None,
-        kwargs: Optional[Dict[Any, str]] = None,
-        static: bool = False,
-        *args,
-    ):
-        super(_CallableStub, self).__init__(*args)
-        self.return_info = return_info
-        self.posargs = posargs
-        self.kwargs = kwargs
-        self.static = static
-
-    def __call__(self, *args, **kwargs):
-        _generate_callable_stub(self)
-        inner_fn = getattr(self, f"_inner_{self._public_name}")
-        retval = inner_fn(*args, **kwargs)
-        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
-        return retval
+    return getattr(self, self._public_name)
 
 
 class _BaseContextProvider:
