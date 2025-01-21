@@ -1,74 +1,4 @@
 attributes:
-  tracer:
-    attributes:
-      Tracer: "Tracer"
-  pin:
-    attributes:
-      Pin: "Pin"
-  span:
-    attributes:
-      Span: "Span"
-  data_streams:
-    methods:
-      set_consume_checkpoint:
-        posargs:
-          typ:
-            type: "str"
-          source:
-            type: "str"
-          carrier_get:
-            type: "Callable"
-      set_produce_checkpoint:
-        posargs:
-          typ:
-            type: "str"
-          target:
-            type: "str"
-          carrier_set:
-            type: "Callable"
-  propagation:
-    attributes:
-      http:
-        attributes:
-          HTTPPropagator:
-            methods:
-              inject:
-                posargs:
-                  span_context:
-                    type: "_Context"
-                  headers:
-                    type: "Dict[str, str]"
-                kwargs:
-                  non_active_span:
-                    type: "Optional[Span]"
-                static: true
-              extract:
-                posargs:
-                  headers:
-                    type: "Any"
-                static: true
-  Pin:
-    methods:
-      onto:
-        posargs:
-          obj:
-            type: "Any"
-        kwargs:
-          send:
-            type: "bool"
-            default: True
-      remove_from:
-        posargs:
-          obj:
-            type: "Any"
-      clone:
-        kwargs:
-          service:
-            type: "Optional[str]"
-          tags:
-            type: "Optional[Dict[str, str]]"
-          tracer:
-            type: "Tracer"
   Span:
     methods:
       set_exc_info:
@@ -131,6 +61,46 @@ attributes:
         kwargs:
           value:
             type: "Any"
+
+  data_streams:
+    methods:
+      set_consume_checkpoint:
+        posargs:
+          typ:
+            type: "str"
+          source:
+            type: "str"
+          carrier_get:
+            type: "Callable"
+      set_produce_checkpoint:
+        posargs:
+          typ:
+            type: "str"
+          target:
+            type: "str"
+          carrier_set:
+            type: "Callable"
+  propagation:
+    attributes:
+      http:
+        attributes:
+          HTTPPropagator:
+            methods:
+              inject:
+                posargs:
+                  span_context:
+                    type: "_Context"
+                  headers:
+                    type: "Dict[str, str]"
+                kwargs:
+                  non_active_span:
+                    type: "Optional[Span]"
+                static: true
+              extract:
+                posargs:
+                  headers:
+                    type: "Any"
+                static: true
   Tracer:
     methods:
       flush: {}
@@ -196,3 +166,34 @@ attributes:
         return_info:
           type: "Callable[[AnyCallable], AnyCallable]"
           value: "lambda: None"
+  Pin:
+    methods:
+      onto:
+        posargs:
+          obj:
+            type: "Any"
+        kwargs:
+          send:
+            type: "bool"
+            default: True
+      remove_from:
+        posargs:
+          obj:
+            type: "Any"
+      clone:
+        kwargs:
+          service:
+            type: "Optional[str]"
+          tags:
+            type: "Optional[Dict[str, str]]"
+          tracer:
+            type: "Tracer"
+  tracer:
+    attributes:
+      Tracer: "Tracer"
+  pin:
+    attributes:
+      Pin: "Pin"
+  span:
+    attributes:
+      Span: "Span"

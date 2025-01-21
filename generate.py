@@ -17,11 +17,9 @@ setattr({module_name}, "{attribute_name}", {attribute_name})
             for attribute_name, attribute_value in module_info.get("attributes", {}).items()
         ]
     )
-    global_assignment = f"globals()['{module_name}']"
     code = f"""
 {module_name} = _Stub()
 {attrs_code}
-{global_assignment} = {module_name}
     """
     _write_out(code)
 
@@ -33,7 +31,7 @@ def _generate_class(name, class_info):
         return_info = method_info.get("return_info", {})
         posarg_defs = [f"{arg}: {info['type']}" for arg, info in method_info.get("posargs", {}).items()]
         kwarg_defs = [
-            f"{arg}:{info.get('_type')}={info.get('default').__repr__()}"
+            f"{arg}:{info.get('type')}={info.get('default').__repr__()}"
             for arg, info in method_info.get("kwargs", {}).items()
         ]
         self_param = ["self"] if not is_static else []
@@ -46,11 +44,11 @@ def _generate_class(name, class_info):
         return {return_info.get('value')}
         """
         )
-    methods_code = "\n".join(method_lines)
+    methods_code = "".join(method_lines)
     code = f"""
 class {name}():
     {methods_code or "pass"}
-globals()['{name}'] = {name}
+{name} = {name}
     """
     _write_out(code)
 
