@@ -89,7 +89,6 @@ class {name}(_Stub):
     {static_method_code or "pass"}
 globals()['{name}'] = {name}
     """
-    print(code)
     exec(code)
 
 
@@ -166,42 +165,45 @@ class _Context:
     ]
 
 
-def _generate_fake_module(name, info, parent_qualname):
-    attrs_lines = []
-    for attribute_name, attribute_value in info["attributes"].items():
-        attribute_qualname = name + "." + attribute_name
-        attrs_lines.append(
+def _generate_module(module_name, module_info):
+    """Generate a stub that is not intended to be instantiated in client code"""
+    attrs_code = "\n".join(
+        [
             f"""
-{attribute_qualname} = {attribute_name}
-        """
-        )
-    attrs_code = "\n".join(attrs_lines)
-    parent_code = f"globals()['{name}']" if "." not in parent_qualname else parent_qualname
-    code = f"""
-{name} = _Stub()
-{attrs_code}
-{parent_code} = {name}
+{module_name + "." + attribute_name} = {attribute_name}
     """
-    print(code)
+            for attribute_name, attribute_value in module_info.get("attributes", {}).items()
+        ]
+    )
+    global_assignment = f"globals()['{module_name}']"
+    code = f"""
+{module_name} = _Stub()
+{attrs_code}
+{global_assignment} = {module_name}
+    """
     exec(code)
 
 
-def _build_classes(node, current_obj_qualname, modules=False):
-    for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
-        if "methods" in node_data:
-            _generate_class(node_name, node_data)
-        elif "attributes" in node_data:
-            _build_classes(node_data, current_obj_qualname)
+def _iterate_node_members(node):
+    for member_info in node.get("attributes", node.get("methods", {})).items():
+        yield member_info
 
 
-def _build_modules(node, current_obj_qualname, modules=False):
-    for node_name, node_data in node.get("attributes", node.get("methods", {})).items():
-        if "attributes" in node_data:
-            _build_modules(node_data, current_obj_qualname)
-            new_name = node_name
-            if current_obj_qualname:
-                new_name = current_obj_qualname + "." + node_name
-            _generate_fake_module(node_name, node_data, new_name)
+def _build_classes(node):
+    modules_to_generate = []
+    for member_name, member_data in _iterate_node_members(node):
+        if "methods" in member_data:
+            _generate_class(member_name, member_data)
+        if "attributes" in member_data:
+            _build_classes(member_data)
+            modules_to_generate.append((member_name, member_data))
+    # this has to happen in a second pass because some of the modules reference generated classes
+    for member_name, member_data in modules_to_generate:
+        _generate_module(member_name, member_data)
+
+
+def _generate_api(node):
+    _build_classes(node)
 
 
 class filters:
@@ -212,5 +214,4 @@ class provider:
     __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
 
 
-_build_classes(definition, "")
-_build_modules(definition, "")
+_generate_api(definition)
