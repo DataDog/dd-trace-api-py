@@ -1,7 +1,7 @@
 import os
-from sys import audit, addaudithook
+from sys import addaudithook, audit  # noqa:F401
 from types import TracebackType  # noqa:F401
-from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type  # noqa:F401
+from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, TypeVar, Type  # noqa:F401
 
 import yaml
 
@@ -9,6 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), "api.yaml")) as definition_str
     definition = yaml.safe_load(definition_stream)
 
 _TagNameType = Union[Text, bytes]
+AnyCallable = TypeVar("AnyCallable", bound=Callable)
 
 
 __all__ = [
@@ -39,7 +40,7 @@ addaudithook(_hook)
 class _Stub:
     def __init__(self, name: Optional[str] = None):
         self._public_name = name
-        self._build_from_spec(self.__class__.__name__)
+        # self._build_from_spec(self.__class__.__name__)
 
     def _build_from_spec(self, name):
         if name not in definition["attributes"]:
@@ -70,7 +71,7 @@ class _CallableStub(_Stub):
         kwargs: Optional[Dict[Any, str]] = None,
         static: bool = False,
         public_name: str = "",
-        attribute_of: str = "",
+        attribute_of: str = "_Stub",
         *args,
     ):
         super(_CallableStub, self).__init__(*args)
@@ -80,39 +81,43 @@ class _CallableStub(_Stub):
         self.static = static
         self._public_name = public_name
         self._attribute_of = attribute_of
+        """
         self.inner_fn = _generate_callable_stub(self)
 
     def __call__(self, *args, **kwargs):
         retval = self.inner_fn(*args, **kwargs)
-        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of or '_Stub'}.{self._public_name or 'foo'}")
+        audit(f"{_DD_HOOK_PREFIX}{self._attribute_of}.{self._public_name}")
         return retval
+        """
 
 
 def _generate_class(name, class_info):
-    static_method_lines = []
+    method_lines = []
     for method_name, method_info in class_info.get("methods", {}).items():
-        if not method_info.get("static", False):
-            continue
+        is_static = method_info.get("static", False)
         return_info = method_info.get("return_info", {})
         posarg_defs = [f"{arg}: {info['type']}" for arg, info in method_info.get("posargs", {}).items()]
         kwarg_defs = [
             f"{arg}:{info.get('_type')}={info.get('default').__repr__()}"
             for arg, info in method_info.get("kwargs", {}).items()
         ]
-        params = ", ".join(posarg_defs + kwarg_defs)
-        method_lines = f"""
-    @staticmethod
+        self_param = ["self"] if not is_static else []
+        params = ", ".join(self_param + posarg_defs + kwarg_defs)
+        method_lines.append(
+            f"""
+    {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
         audit("{_DD_HOOK_PREFIX}{name or '_Stub'}.{method_name or 'foo'}")
         return {return_info.get('value')}
         """
-        static_method_lines.append(method_lines)
-    static_method_code = "\n".join(static_method_lines)
+        )
+    methods_code = "\n".join(method_lines)
     code = f"""
 class {name}(_Stub):
-    {static_method_code or "pass"}
+    {methods_code or "pass"}
 globals()['{name}'] = {name}
     """
+    print(code)
     exec(code)
 
 

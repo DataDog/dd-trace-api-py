@@ -195,4 +195,4 @@ attributes:
             type: "Optional[str]"
         return_info:
           type: "Callable[[AnyCallable], AnyCallable]"
-          value: "lambda: pass"
+          value: "lambda: None"
