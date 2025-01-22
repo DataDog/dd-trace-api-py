@@ -1,13 +1,6 @@
-[build-system]
-requires = ["setuptools>=64", "setuptools-scm>=8"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "dd_trace_api"
-dynamic = ["version"]
+version = "0.0.0"
 dependencies = [
     "pyyaml >= 6.0.0"
 ]
-
-[tool.setuptools_scm]
-version_file = "dd_trace_api/_version.py"
