@@ -4,7 +4,7 @@ from sys import audit
 from types import TracebackType  # noqa:F401
 from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, TypeVar, Type  # noqa:F401
 import importlib.metadata
-version_string_of_foo = importlib.metadata.version('dd_trace_api')
+__version__ = importlib.metadata.version('dd_trace_api')
 
 
 class _Stub:
