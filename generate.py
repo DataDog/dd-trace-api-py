@@ -81,6 +81,7 @@ def _generate_header():
 from sys import audit
 from types import TracebackType  # noqa:F401
 from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, TypeVar, Type  # noqa:F401
+from _version import __version__
 
 
 class _Stub:
