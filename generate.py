@@ -48,7 +48,6 @@ def _generate_class(name, class_info):
     code = f"""
 class {name}():
     {methods_code or "pass"}
-{name} = {name}
     """
     _write_out(code)
 

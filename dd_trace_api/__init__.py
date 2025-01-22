@@ -119,7 +119,6 @@ class Span():
         audit(_DD_HOOK_PREFIX + "Span.set_tag")
         return None
         
-Span = Span
     
 
 class data_streams():
@@ -134,7 +133,6 @@ class data_streams():
         audit(_DD_HOOK_PREFIX + "data_streams.set_produce_checkpoint")
         return None
         
-data_streams = data_streams
     
 
 class HTTPPropagator():
@@ -149,7 +147,6 @@ class HTTPPropagator():
         audit(_DD_HOOK_PREFIX + "HTTPPropagator.extract")
         return None
         
-HTTPPropagator = HTTPPropagator
     
 
 http = _Stub()
@@ -200,7 +197,6 @@ class Tracer():
         audit(_DD_HOOK_PREFIX + "Tracer.wrap")
         return lambda: None
         
-Tracer = Tracer
     
 
 class Pin():
@@ -220,7 +216,6 @@ class Pin():
         audit(_DD_HOOK_PREFIX + "Pin.clone")
         return None
         
-Pin = Pin
     
 
 propagation = _Stub()
