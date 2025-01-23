@@ -1,6 +1,8 @@
 attributes:
   Span:
     methods:
+      __enter__: {}
+      __exit__: {}
       set_exc_info:
         posargs:
           exc_type:
