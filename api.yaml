@@ -1,8 +1,18 @@
 attributes:
   Span:
     methods:
-      __enter__: {}
-      __exit__: {}
+      __enter__:
+        return_info:
+          type: "'Span'"
+          value: "self"
+      __exit__:
+        posargs:
+          exc_type:
+            type: "Type[BaseException]"
+          exc_val:
+            type: "BaseException"
+          exc_tb:
+            type: "Optional[TracebackType]"
       set_exc_info:
         posargs:
           exc_type:

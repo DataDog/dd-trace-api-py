@@ -72,12 +72,12 @@ class _Context:
 class Span():
     
     
-    def __enter__(self) -> None:
+    def __enter__(self) -> 'Span':
         audit(_DD_HOOK_PREFIX + "Span.__enter__")
-        return None
+        return self
         
     
-    def __exit__(self) -> None:
+    def __exit__(self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Optional[TracebackType]) -> None:
         audit(_DD_HOOK_PREFIX + "Span.__exit__")
         return None
         
