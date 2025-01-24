@@ -207,7 +207,7 @@ class Tracer():
     
     def wrap(self, name:Optional[str]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Callable[[AnyCallable], AnyCallable]:
         audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([], {'name': name, 'service': service, 'resource': resource, 'span_type': span_type}))
-        return lambda: None
+        return lambda *args, **kwargs: None
         
     
 
