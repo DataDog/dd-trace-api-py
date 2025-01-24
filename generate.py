@@ -37,7 +37,7 @@ def _generate_class(name, class_info):
             kwarg_defs.append(f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}")
             kwargs.append(kwarg)
         args_str = "[" + ", ".join(args) + "]"
-        kwargs_str = "{" + ", ".join([f"{kwarg}: {kwarg}" for kwarg in kwargs]) + "}"
+        kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
         self_param = ["self"] if not is_static else []
         params = ", ".join(self_param + posarg_defs + kwarg_defs)
         method_lines.append(

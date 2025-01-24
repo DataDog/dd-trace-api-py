@@ -88,12 +88,12 @@ class Span():
         
     
     def set_link(self, trace_id: int, span_id: int, tracestate:Optional[str]=None, flags:Optional[int]=None, attributes:Optional[Dict[str, Any]]=None) -> None:
-        audit(_DD_HOOK_PREFIX + "Span.set_link", ([trace_id, span_id], {tracestate: tracestate, flags: flags, attributes: attributes}))
+        audit(_DD_HOOK_PREFIX + "Span.set_link", ([trace_id, span_id], {'tracestate': tracestate, 'flags': flags, 'attributes': attributes}))
         return None
         
     
     def link_span(self, attributes:Optional[Dict[str, Any]]=None) -> None:
-        audit(_DD_HOOK_PREFIX + "Span.link_span", ([], {attributes: attributes}))
+        audit(_DD_HOOK_PREFIX + "Span.link_span", ([], {'attributes': attributes}))
         return None
         
     
@@ -123,12 +123,12 @@ class Span():
         
     
     def finish(self, finish_time:Optional[float]=None) -> None:
-        audit(_DD_HOOK_PREFIX + "Span.finish", ([], {finish_time: finish_time}))
+        audit(_DD_HOOK_PREFIX + "Span.finish", ([], {'finish_time': finish_time}))
         return None
         
     
     def set_tag(self, key: _TagNameType, value:Any=None) -> None:
-        audit(_DD_HOOK_PREFIX + "Span.set_tag", ([key], {value: value}))
+        audit(_DD_HOOK_PREFIX + "Span.set_tag", ([key], {'value': value}))
         return None
         
     
@@ -151,7 +151,7 @@ class HTTPPropagator():
     
     @staticmethod
     def inject(span_context: _Context, headers: Dict[str, str], non_active_span:Optional[Span]=None) -> None:
-        audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject", ([span_context, headers], {non_active_span: non_active_span}))
+        audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject", ([span_context, headers], {'non_active_span': non_active_span}))
         return None
         
     @staticmethod
@@ -186,7 +186,7 @@ class Tracer():
         
     
     def start_span(self, name: str, child_of:Optional[Union[Span, _Context]]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
-        audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([name], {child_of: child_of, service: service, resource: resource, span_type: span_type, activate: activate}))
+        audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
         return Span()
         
     
@@ -201,12 +201,12 @@ class Tracer():
         
     
     def trace(self, name: str, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Span:
-        audit(_DD_HOOK_PREFIX + "Tracer.trace", ([name], {service: service, resource: resource, span_type: span_type}))
+        audit(_DD_HOOK_PREFIX + "Tracer.trace", ([name], {'service': service, 'resource': resource, 'span_type': span_type}))
         return Span()
         
     
     def wrap(self, name:Optional[str]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Callable[[AnyCallable], AnyCallable]:
-        audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([], {name: name, service: service, resource: resource, span_type: span_type}))
+        audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([], {'name': name, 'service': service, 'resource': resource, 'span_type': span_type}))
         return lambda: None
         
     
@@ -215,7 +215,7 @@ class Pin():
     
     
     def onto(self, obj: Any, send:bool=True) -> None:
-        audit(_DD_HOOK_PREFIX + "Pin.onto", ([obj], {send: send}))
+        audit(_DD_HOOK_PREFIX + "Pin.onto", ([obj], {'send': send}))
         return None
         
     
@@ -225,7 +225,7 @@ class Pin():
         
     
     def clone(self, service:Optional[str]=None, tags:Optional[Dict[str, str]]=None, tracer:Tracer=None) -> None:
-        audit(_DD_HOOK_PREFIX + "Pin.clone", ([], {service: service, tags: tags, tracer: tracer}))
+        audit(_DD_HOOK_PREFIX + "Pin.clone", ([], {'service': service, 'tags': tags, 'tracer': tracer}))
         return None
         
     
