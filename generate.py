@@ -29,18 +29,22 @@ def _generate_class(name, class_info):
     for method_name, method_info in class_info.get("methods", {}).items():
         is_static = method_info.get("static", False)
         return_info = method_info.get("return_info", {})
-        posarg_defs = [f"{arg}: {info['type']}" for arg, info in method_info.get("posargs", {}).items()]
-        kwarg_defs = [
-            f"{arg}:{info.get('type')}={info.get('default').__repr__()}"
-            for arg, info in method_info.get("kwargs", {}).items()
-        ]
+        posarg_defs, kwarg_defs, args, kwargs = [], [], [], []
+        for arg, info in method_info.get("posargs", {}).items():
+            posarg_defs.append(f"{arg}: {info['type']}")
+            args.append(arg)
+        for kwarg, info in method_info.get("kwargs", {}).items():
+            kwarg_defs.append(f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}")
+            kwargs.append(kwarg)
+        args_str = "[" + ", ".join(args) + "]"
+        kwargs_str = "{" + ", ".join([f"{kwarg}: {kwarg}" for kwarg in kwargs]) + "}"
         self_param = ["self"] if not is_static else []
         params = ", ".join(self_param + posarg_defs + kwarg_defs)
         method_lines.append(
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
-        audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}")
+        audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         return {return_info.get('value')}
         """
         )
