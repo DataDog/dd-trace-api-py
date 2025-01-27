@@ -1,5 +1,6 @@
 attributes:
   Span:
+    shares_self: true
     methods:
       __enter__:
         return_info:

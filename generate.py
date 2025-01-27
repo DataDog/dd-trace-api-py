@@ -26,6 +26,7 @@ setattr({module_name}, "{attribute_name}", {attribute_name})
 
 def _generate_class(name, class_info):
     method_lines = []
+    shares_self = class_info.get("shares_self", False)
     for method_name, method_info in class_info.get("methods", {}).items():
         is_static = method_info.get("static", False)
         return_info = method_info.get("return_info", {})
@@ -41,13 +42,11 @@ def _generate_class(name, class_info):
         params = ", ".join(self_param + posarg_defs + kwarg_defs)
         args.insert(0, "shared_state")
         args_str = "[" + ", ".join(args) + "]"
-        # XXX when a Span is involved here, give back the real span from the audit hook and store it
-        # privately on the stub
         method_lines.append(
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
-        shared_state = {'{"stub_self": self}' if not is_static else '{}'}
+        shared_state = {'{"stub_self": self}' if shares_self else '{}'}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         retval = {return_info.get('value')}
         if retval is not None:
