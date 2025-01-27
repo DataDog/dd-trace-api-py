@@ -398,10 +398,8 @@ setattr(propagation, "http", http)
     
     
 
-tracer = _Stub()
+tracer = Tracer()
 
-setattr(tracer, "Tracer", Tracer)
-    
     
 
 pin = _Stub()

@@ -202,8 +202,7 @@ attributes:
           tracer:
             type: "Tracer"
   tracer:
-    attributes:
-      Tracer: "Tracer"
+    instance_of: "Tracer"
   pin:
     attributes:
       Pin: "Pin"

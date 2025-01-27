@@ -18,7 +18,7 @@ setattr({module_name}, "{attribute_name}", {attribute_name})
         ]
     )
     code = f"""
-{module_name} = _Stub()
+{module_name} = {module_info.get("instance_of", "_Stub")}()
 {attrs_code}
     """
     _write_out(code)
@@ -81,6 +81,8 @@ def _build_classes(node):
             _generate_class(member_name, member_data)
         if "attributes" in member_data:
             _build_classes(member_data)
+            modules_to_generate.append((member_name, member_data))
+        if "instance_of" in member_data:
             modules_to_generate.append((member_name, member_data))
     # this has to happen in a second pass because some of the modules reference generated classes
     for member_name, member_data in modules_to_generate:
