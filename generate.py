@@ -47,12 +47,13 @@ def _generate_class(name, class_info):
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
-        shared_state = {{}}
+        shared_state = {'{"stub_self": self}' if not is_static else '{}'}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         retval = {return_info.get('value')}
         if retval is not None:
             for key, value in shared_state.items():
-                setattr(retval, "_" + key, value)
+                if value is not self:
+                    setattr(retval, "_" + key, value)
         return retval
         """
         )
