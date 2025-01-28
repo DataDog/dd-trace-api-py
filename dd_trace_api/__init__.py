@@ -107,10 +107,10 @@ class Span():
         return retval
         
     
-    def set_traceback(self, limit: Optional[int]) -> None:
+    def set_traceback(self, limit:Optional[int]=None) -> None:
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
-        audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([shared_state, limit], {}))
+        audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([shared_state], {'limit': limit}))
         return retval
         
     

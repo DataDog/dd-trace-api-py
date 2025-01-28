@@ -43,7 +43,7 @@ attributes:
           attributes:
             type: "Optional[Dict[str, Any]]"
       set_traceback:
-        posargs:
+        kwargs:
           limit:
             type: "Optional[int]"
       set_tags:
