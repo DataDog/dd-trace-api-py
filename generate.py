@@ -42,17 +42,17 @@ def _generate_class(name, class_info):
         params = ", ".join(self_param + posarg_defs + kwarg_defs)
         args.insert(0, "shared_state")
         args_str = "[" + ", ".join(args) + "]"
+        shared_state_vars = [("api_return_value", "retval")]
+        if shares_self:
+            shared_state_vars.append(("stub_self", "self"))
+        shared_state_str = "{" + ", ".join([f"'{k}': {v}" for k, v in shared_state_vars]) + "}"
         method_lines.append(
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
-        shared_state = {'{"stub_self": self}' if shares_self else '{}'}
-        audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         retval = {return_info.get('value')}
-        if retval is not None:
-            for key, value in shared_state.items():
-                if value is not self:
-                    setattr(retval, "_" + key, value)
+        shared_state = {shared_state_str}
+        audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         return retval
         """
         )
