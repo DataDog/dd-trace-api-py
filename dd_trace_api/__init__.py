@@ -18,13 +18,14 @@ __all__ = [
     "Pin",
     "Span",
     "Tracer",
-    "context",
+    "Context",
     "data_streams",
     "filters",
     "pin",
     "provider",
     "span",
     "tracer",
+    "context",
     "propagation",
 ]
 _DD_HOOK_PREFIX = "dd.hooks."
@@ -59,14 +60,17 @@ class _TraceFilter:
 
 class _FilterRequestsOnUrl:
     __slots__ = ["process_trace"]
+    
 
-
-class _Context:
-    __slots__ = [
-        "set_baggage_item",
-        "remove_baggage_item",
-        "remove_all_baggage_items",
-    ]
+class Context():
+    
+    
+    def set_baggage_item(self) -> None:
+        retval = None
+        shared_state = {'api_return_value': retval}
+        audit(_DD_HOOK_PREFIX + "Context.set_baggage_item", ([shared_state], {}))
+        return retval
+        
     
 
 class Span():
@@ -100,10 +104,10 @@ class Span():
         return retval
         
     
-    def link_span(self, attributes:Optional[Dict[str, Any]]=None) -> None:
+    def link_span(self, context: Context, attributes:Optional[Dict[str, Any]]=None) -> None:
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
-        audit(_DD_HOOK_PREFIX + "Span.link_span", ([shared_state], {'attributes': attributes}))
+        audit(_DD_HOOK_PREFIX + "Span.link_span", ([shared_state, context], {'attributes': attributes}))
         return retval
         
     
@@ -178,7 +182,7 @@ class data_streams():
 class HTTPPropagator():
     
     @staticmethod
-    def inject(span_context: _Context, headers: Dict[str, str], non_active_span:Optional[Span]=None) -> None:
+    def inject(span_context: Context, headers: Dict[str, str], non_active_span:Optional[Span]=None) -> None:
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject", ([shared_state, span_context, headers], {'non_active_span': non_active_span}))
@@ -223,7 +227,7 @@ class Tracer():
         return retval
         
     
-    def start_span(self, name: str, child_of:Optional[Union[Span, _Context]]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
+    def start_span(self, name: str, child_of:Optional[Union[Span, Context]]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
         retval = Span()
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([shared_state, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
@@ -297,6 +301,12 @@ tracer = Tracer()
 pin = _Stub()
 
 setattr(pin, "Pin", Pin)
+    
+    
+
+context = _Stub()
+
+setattr(context, "Context", Context)
     
     
 

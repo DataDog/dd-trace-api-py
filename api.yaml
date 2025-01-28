@@ -1,4 +1,7 @@
 attributes:
+  Context:
+    methods:
+      set_baggage_item: {}
   Span:
     shares_self: true
     methods:
@@ -36,9 +39,9 @@ attributes:
           attributes:
             type: "Optional[Dict[str, Any]]"
       link_span:
-        #posargs:
-        #  context:
-        #    type: "context"
+        posargs:
+          context:
+            type: "Context"
         kwargs:
           attributes:
             type: "Optional[Dict[str, Any]]"
@@ -102,7 +105,7 @@ attributes:
               inject:
                 posargs:
                   span_context:
-                    type: "_Context"
+                    type: "Context"
                   headers:
                     type: "Dict[str, str]"
                 kwargs:
@@ -131,7 +134,7 @@ attributes:
             type: "str"
         kwargs:
           child_of:
-            type: "Optional[Union[Span, _Context]]"
+            type: "Optional[Union[Span, Context]]"
           service:
             type: "Optional[str]"
           resource:
@@ -206,6 +209,9 @@ attributes:
   pin:
     attributes:
       Pin: "Pin"
+  context:
+    attributes:
+      Context: "Context"
   span:
     attributes:
       Span: "Span"

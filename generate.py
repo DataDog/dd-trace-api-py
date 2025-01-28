@@ -110,13 +110,14 @@ __all__ = [
     "Pin",
     "Span",
     "Tracer",
-    "context",
+    "Context",
     "data_streams",
     "filters",
     "pin",
     "provider",
     "span",
     "tracer",
+    "context",
     "propagation",
 ]
 _DD_HOOK_PREFIX = "dd.hooks."
@@ -151,14 +152,6 @@ class _TraceFilter:
 
 class _FilterRequestsOnUrl:
     __slots__ = ["process_trace"]
-
-
-class _Context:
-    __slots__ = [
-        "set_baggage_item",
-        "remove_baggage_item",
-        "remove_all_baggage_items",
-    ]
     """
     _write_out(code)
 
