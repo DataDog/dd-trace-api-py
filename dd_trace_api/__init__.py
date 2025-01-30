@@ -22,7 +22,6 @@ __all__ = [
     "data_streams",
     "filters",
     "pin",
-    "provider",
     "span",
     "tracer",
     "context",
@@ -32,26 +31,6 @@ _DD_HOOK_PREFIX = "dd.hooks."
 
 class filters:
     __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
-
-
-class provider:
-    __slots__ = ["BaseContextProvider", "DatadogContextMixin", "DefaultContextProvider", "CIContextProvider"]
-
-
-class _BaseContextProvider:
-    __slots__ = ["activate", "active"]
-
-
-class _DatadogContextMixin:
-    __slots__ = ["activate", "active"]
-
-
-class _DefaultContextProvider:
-    __slots__ = ["activate", "active"]
-
-
-class _CIContextProvider:
-    __slots__ = ["activate", "active"]
 
 
 class _TraceFilter:
