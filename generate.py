@@ -24,6 +24,20 @@ setattr({module_name}, "{attribute_name}", {attribute_name})
     _write_out(code)
 
 
+def _build_decorator():
+    code = """
+        def wrap_decorator(f: AnyCallable) -> AnyCallable:
+            @functools.wraps(f)
+            def func_wrapper(*args, **kwargs):
+                return f(*args, **kwargs)
+
+            return func_wrapper
+
+        return wrap_decorator
+    """
+    return code
+
+
 def _generate_class(name, class_info):
     method_lines = []
     shares_self = class_info.get("shares_self", False)
@@ -42,6 +56,9 @@ def _generate_class(name, class_info):
         params = ", ".join(self_param + posarg_defs + kwarg_defs)
         args.insert(0, "shared_state")
         args_str = "[" + ", ".join(args) + "]"
+        decorator_setup_str = ""
+        if method_info.get("decorator", False):
+            decorator_setup_str = _build_decorator()
         shared_state_vars = [("api_return_value", "retval")]
         if shares_self:
             shared_state_vars.append(("stub_self", "self"))
@@ -50,6 +67,7 @@ def _generate_class(name, class_info):
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
+        {decorator_setup_str}
         retval = {return_info.get('value')}
         shared_state = {shared_state_str}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))

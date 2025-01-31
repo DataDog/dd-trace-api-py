@@ -179,6 +179,7 @@ attributes:
           type: "Span"
           value: "Span()"
       wrap:
+        decorator: True
         kwargs:
           name:
             type: "Optional[str]"
@@ -190,7 +191,7 @@ attributes:
             type: "Optional[str]"
         return_info:
           type: "Callable[[TypeVar('AnyCallable', bound=Callable)], TypeVar('AnyCallable', bound=Callable)]"
-          value: "lambda *args, **kwargs: None"
+          value: "wrap_decorator"
   Pin:
     methods:
       onto:
