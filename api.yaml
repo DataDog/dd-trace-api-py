@@ -52,11 +52,11 @@ attributes:
       set_tags:
         posargs:
           tags:
-            type: "Dict[_TagNameType, Any]"
+            type: "Dict[Union[Text, bytes], Any]"
       set_tag_str:
         posargs:
           key:
-            type: "_TagNameType"
+            type: "Union[Text, bytes]"
           value:
             type: "Text"
       set_struct_tag:
@@ -73,7 +73,7 @@ attributes:
       set_tag:
         posargs:
           key:
-            type: "_TagNameType"
+            type: "Union[Text, bytes]"
         kwargs:
           value:
             type: "Any"
@@ -117,6 +117,15 @@ attributes:
                   headers:
                     type: "Any"
                 static: true
+  TraceFilter:
+    methods:
+      process_trace:
+        abstract: true
+        posargs:
+          trace:
+            type: List[Span]
+        return_info:
+          type: Optional[List[Span]]
   Tracer:
     methods:
       flush: {}
@@ -180,7 +189,7 @@ attributes:
           span_type:
             type: "Optional[str]"
         return_info:
-          type: "Callable[[AnyCallable], AnyCallable]"
+          type: "Callable[[TypeVar('AnyCallable', bound=Callable)], TypeVar('AnyCallable', bound=Callable)]"
           value: "lambda *args, **kwargs: None"
   Pin:
     methods:

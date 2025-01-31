@@ -6,39 +6,11 @@ from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type
 import importlib.metadata
 __version__ = importlib.metadata.version('dd_trace_api')
 
+_DD_HOOK_PREFIX = "dd.hooks."
+
 
 class _Stub:
     pass
-
-
-_TagNameType = Union[Text, bytes]
-AnyCallable = TypeVar("AnyCallable", bound=Callable)
-
-__all__ = [
-    "Pin",
-    "Span",
-    "Tracer",
-    "Context",
-    "data_streams",
-    "filters",
-    "pin",
-    "span",
-    "tracer",
-    "context",
-    "propagation",
-]
-_DD_HOOK_PREFIX = "dd.hooks."
-
-class filters:
-    __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
-
-
-class _TraceFilter:
-    __slots__ = ["process_trace"]
-
-
-class _FilterRequestsOnUrl:
-    __slots__ = ["process_trace"]
     
 
 class Context():
@@ -97,14 +69,14 @@ class Span():
         return retval
         
     
-    def set_tags(self, tags: Dict[_TagNameType, Any]) -> None:
+    def set_tags(self, tags: Dict[Union[Text, bytes], Any]) -> None:
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tags", ([shared_state, tags], {}))
         return retval
         
     
-    def set_tag_str(self, key: _TagNameType, value: Text) -> None:
+    def set_tag_str(self, key: Union[Text, bytes], value: Text) -> None:
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tag_str", ([shared_state, key, value], {}))
@@ -132,7 +104,7 @@ class Span():
         return retval
         
     
-    def set_tag(self, key: _TagNameType, value:Any=None) -> None:
+    def set_tag(self, key: Union[Text, bytes], value:Any=None) -> None:
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tag", ([shared_state, key], {'value': value}))
@@ -180,6 +152,17 @@ http = _Stub()
 
 setattr(http, "HTTPPropagator", HTTPPropagator)
     
+    
+
+class TraceFilter():
+    
+    
+    def process_trace(self, trace: List[Span]) -> Optional[List[Span]]:
+        retval = None
+        shared_state = {'api_return_value': retval}
+        audit(_DD_HOOK_PREFIX + "TraceFilter.process_trace", ([shared_state, trace], {}))
+        return retval
+        
     
 
 class Tracer():
@@ -234,7 +217,7 @@ class Tracer():
         return retval
         
     
-    def wrap(self, name:Optional[str]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Callable[[AnyCallable], AnyCallable]:
+    def wrap(self, name:Optional[str]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Callable[[TypeVar('AnyCallable', bound=Callable)], TypeVar('AnyCallable', bound=Callable)]:
         retval = lambda *args, **kwargs: None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([shared_state], {'name': name, 'service': service, 'resource': resource, 'span_type': span_type}))

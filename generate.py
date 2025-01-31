@@ -98,39 +98,11 @@ from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type
 import importlib.metadata
 __version__ = importlib.metadata.version('dd_trace_api')
 
+_DD_HOOK_PREFIX = "dd.hooks."
+
 
 class _Stub:
     pass
-
-
-_TagNameType = Union[Text, bytes]
-AnyCallable = TypeVar("AnyCallable", bound=Callable)
-
-__all__ = [
-    "Pin",
-    "Span",
-    "Tracer",
-    "Context",
-    "data_streams",
-    "filters",
-    "pin",
-    "span",
-    "tracer",
-    "context",
-    "propagation",
-]
-_DD_HOOK_PREFIX = "dd.hooks."
-
-class filters:
-    __slots__ = ["TraceFilter", "FilterRequestsOnUrl"]
-
-
-class _TraceFilter:
-    __slots__ = ["process_trace"]
-
-
-class _FilterRequestsOnUrl:
-    __slots__ = ["process_trace"]
     """
     _write_out(code)
 

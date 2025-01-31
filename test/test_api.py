@@ -51,5 +51,3 @@ def _traverse(node, obj_under_test):
 
 def test_api_accessible():
     _traverse(definition, dd_trace_api)
-    for attr_name, attr_info in definition["attributes"].items():
-        assert attr_name in dd_trace_api.__all__
