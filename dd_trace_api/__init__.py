@@ -14,20 +14,6 @@ class _Stub:
     pass
     
 
-class Context():
-    
-    
-    def set_baggage_item(self) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "Context.set_baggage_item", ([shared_state], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-
 class Span():
     
     
@@ -57,26 +43,6 @@ class Span():
         shared_state = {'api_return_value': retval, 'stub_self': self}
         
         audit(_DD_HOOK_PREFIX + "Span.set_exc_info", ([shared_state, exc_type, exc_val, exc_tb], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def set_link(self, trace_id: int, span_id: int, tracestate:Optional[str]=None, flags:Optional[int]=None, attributes:Optional[Dict[str, Any]]=None) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
-        
-        audit(_DD_HOOK_PREFIX + "Span.set_link", ([shared_state, trace_id, span_id], {'tracestate': tracestate, 'flags': flags, 'attributes': attributes}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def link_span(self, context: Context, attributes:Optional[Dict[str, Any]]=None) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
-        
-        audit(_DD_HOOK_PREFIX + "Span.link_span", ([shared_state, context], {'attributes': attributes}))
         retval = shared_state.get("impl_return_value", retval)
         return retval
         
@@ -176,50 +142,6 @@ class data_streams():
         
     
 
-class HTTPPropagator():
-    
-    @staticmethod
-    def inject(span_context: Context, headers: Dict[str, str], non_active_span:Optional[Span]=None) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject", ([shared_state, span_context, headers], {'non_active_span': non_active_span}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    @staticmethod
-    def extract(headers: Any) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "HTTPPropagator.extract", ([shared_state, headers], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-
-http = _Stub()
-
-setattr(http, "HTTPPropagator", HTTPPropagator)
-    
-    
-
-class TraceFilter():
-    
-    
-    def process_trace(self, trace: List[Span]) -> Optional[List[Span]]:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "TraceFilter.process_trace", ([shared_state, trace], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-
 class Tracer():
     
     
@@ -253,7 +175,7 @@ class Tracer():
         return retval
         
     
-    def start_span(self, name: str, child_of:Optional[Union[Span, Context]]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
+    def start_span(self, name: str, child_of:Optional[Span]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
         
         retval = Span()
         shared_state = {'api_return_value': retval, 'stub_self': self}
@@ -345,12 +267,6 @@ class Pin():
         
     
 
-propagation = _Stub()
-
-setattr(propagation, "http", http)
-    
-    
-
 tracer = Tracer()
 
     
@@ -358,12 +274,6 @@ tracer = Tracer()
 pin = _Stub()
 
 setattr(pin, "Pin", Pin)
-    
-    
-
-context = _Stub()
-
-setattr(context, "Context", Context)
     
     
 
