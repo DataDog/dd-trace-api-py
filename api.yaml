@@ -15,6 +15,7 @@ attributes:
           exc_tb:
             type: "Optional[TracebackType]"
       set_exc_info:
+        docstring: "Tag the span with an error tuple as from ``sys.exc_info()``"
         posargs:
           exc_type:
             type: "Type[BaseException]"
@@ -23,56 +24,35 @@ attributes:
           exc_tb:
             type: "Optional[TracebackType]"
       set_traceback:
+        docstring: |
+          "If the current stack has an exception, tag the span with the relevant error info. If not, tag
+          it with the current python stack."
         kwargs:
           limit:
             type: "Optional[int]"
       set_tags:
+        docstring: "Set a dictionary of tags on the given span. Keys and values must be strings (or stringable)"
         posargs:
           tags:
             type: "Dict[Union[Text, bytes], Any]"
-      set_tag_str:
-        posargs:
-          key:
-            type: "Union[Text, bytes]"
-          value:
-            type: "Text"
-      set_struct_tag:
-        posargs:
-          key:
-            type: "str"
-          value:
-            type: "Dict[str, Any]"
-      finish_with_ancestors: {}
+      finish_with_ancestors:
+        docstring: |
+          "
+          Finish this span along with all (accessible) ancestors of this span.
+
+          This method is useful if a sudden program shutdown is required and finishing
+          the trace is desired.
+          "
       finish:
+        docstring: |
+          "Mark the end time of the span and submit it to the tracer.
+          If the span has already been finished don't do anything.
+          "
         kwargs:
           finish_time:
             type: "Optional[float]"
-      set_tag:
-        posargs:
-          key:
-            type: "Union[Text, bytes]"
-        kwargs:
-          value:
-            type: "Any"
+            doc: "The end time of the span, in seconds. Defaults to ``now``."
 
-  data_streams:
-    methods:
-      set_consume_checkpoint:
-        posargs:
-          typ:
-            type: "str"
-          source:
-            type: "str"
-          carrier_get:
-            type: "Callable"
-      set_produce_checkpoint:
-        posargs:
-          typ:
-            type: "str"
-          target:
-            type: "str"
-          carrier_set:
-            type: "Callable"
   Tracer:
     docstring: |
       'Tracer is used to create and submit spans that measure the
@@ -297,33 +277,8 @@ attributes:
         return_info:
           type: "Callable[[TypeVar('AnyCallable', bound=Callable)], TypeVar('AnyCallable', bound=Callable)]"
           value: "wrap_decorator"
-  Pin:
-    methods:
-      onto:
-        posargs:
-          obj:
-            type: "Any"
-        kwargs:
-          send:
-            type: "bool"
-            default: True
-      remove_from:
-        posargs:
-          obj:
-            type: "Any"
-      clone:
-        kwargs:
-          service:
-            type: "Optional[str]"
-          tags:
-            type: "Optional[Dict[str, str]]"
-          tracer:
-            type: "Tracer"
   tracer:
     instance_of: "Tracer"
-  pin:
-    attributes:
-      Pin: "Pin"
   span:
     attributes:
       Span: "Span"

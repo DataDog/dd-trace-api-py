@@ -67,26 +67,6 @@ class Span():
         return retval
         
     
-    def set_tag_str(self, key: Union[Text, bytes], value: Text) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
-        
-        audit(_DD_HOOK_PREFIX + "Span.set_tag_str", ([shared_state, key, value], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def set_struct_tag(self, key: str, value: Dict[str, Any]) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
-        
-        audit(_DD_HOOK_PREFIX + "Span.set_struct_tag", ([shared_state, key, value], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
     def finish_with_ancestors(self) -> None:
         
         retval = None
@@ -103,40 +83,6 @@ class Span():
         shared_state = {'api_return_value': retval, 'stub_self': self}
         
         audit(_DD_HOOK_PREFIX + "Span.finish", ([shared_state], {'finish_time': finish_time}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def set_tag(self, key: Union[Text, bytes], value:Any=None) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
-        
-        audit(_DD_HOOK_PREFIX + "Span.set_tag", ([shared_state, key], {'value': value}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-
-class data_streams():
-    
-    
-    def set_consume_checkpoint(self, typ: str, source: str, carrier_get: Callable) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "data_streams.set_consume_checkpoint", ([shared_state, typ, source, carrier_get], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def set_produce_checkpoint(self, typ: str, target: str, carrier_set: Callable) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "data_streams.set_produce_checkpoint", ([shared_state, typ, target, carrier_set], {}))
         retval = shared_state.get("impl_return_value", retval)
         return retval
         
@@ -233,48 +179,8 @@ class Tracer():
         
     
 
-class Pin():
-    
-    
-    def onto(self, obj: Any, send:bool=True) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "Pin.onto", ([shared_state, obj], {'send': send}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def remove_from(self, obj: Any) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "Pin.remove_from", ([shared_state, obj], {}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-    def clone(self, service:Optional[str]=None, tags:Optional[Dict[str, str]]=None, tracer:Tracer=None) -> None:
-        
-        retval = None
-        shared_state = {'api_return_value': retval}
-        
-        audit(_DD_HOOK_PREFIX + "Pin.clone", ([shared_state], {'service': service, 'tags': tags, 'tracer': tracer}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
-        
-    
-
 tracer = Tracer()
 
-    
-
-pin = _Stub()
-
-setattr(pin, "Pin", Pin)
-    
     
 
 span = _Stub()
