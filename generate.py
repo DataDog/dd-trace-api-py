@@ -69,6 +69,7 @@ def _generate_class(name, class_info):
         retval = {return_info.get('value')}
         shared_state = {shared_state_str}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         """
         )

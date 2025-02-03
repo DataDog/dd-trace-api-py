@@ -22,6 +22,7 @@ class Context():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Context.set_baggage_item", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -34,6 +35,7 @@ class Span():
         retval = self
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.__enter__", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -42,6 +44,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.__exit__", ([shared_state, exc_type, exc_val, exc_tb], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -50,6 +53,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_exc_info", ([shared_state, exc_type, exc_val, exc_tb], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -58,6 +62,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_link", ([shared_state, trace_id, span_id], {'tracestate': tracestate, 'flags': flags, 'attributes': attributes}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -66,6 +71,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.link_span", ([shared_state, context], {'attributes': attributes}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -74,6 +80,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([shared_state], {'limit': limit}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -82,6 +89,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tags", ([shared_state, tags], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -90,6 +98,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tag_str", ([shared_state, key, value], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -98,6 +107,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_struct_tag", ([shared_state, key, value], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -106,6 +116,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.finish_with_ancestors", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -114,6 +125,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.finish", ([shared_state], {'finish_time': finish_time}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -122,6 +134,7 @@ class Span():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Span.set_tag", ([shared_state, key], {'value': value}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -134,6 +147,7 @@ class data_streams():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "data_streams.set_consume_checkpoint", ([shared_state, typ, source, carrier_get], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -142,6 +156,7 @@ class data_streams():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "data_streams.set_produce_checkpoint", ([shared_state, typ, target, carrier_set], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -154,6 +169,7 @@ class HTTPPropagator():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "HTTPPropagator.inject", ([shared_state, span_context, headers], {'non_active_span': non_active_span}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     @staticmethod
@@ -162,6 +178,7 @@ class HTTPPropagator():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "HTTPPropagator.extract", ([shared_state, headers], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -180,6 +197,7 @@ class TraceFilter():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "TraceFilter.process_trace", ([shared_state, trace], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -192,6 +210,7 @@ class Tracer():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.flush", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -200,6 +219,7 @@ class Tracer():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.set_tags", ([shared_state, tags], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -208,6 +228,7 @@ class Tracer():
         retval = None
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.shutdown", ([shared_state, timeout], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -216,6 +237,7 @@ class Tracer():
         retval = Span()
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([shared_state, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -224,6 +246,7 @@ class Tracer():
         retval = Span()
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.current_root_span", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -232,6 +255,7 @@ class Tracer():
         retval = Span()
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.current_span", ([shared_state], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -240,6 +264,7 @@ class Tracer():
         retval = Span()
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.trace", ([shared_state, name], {'service': service, 'resource': resource, 'span_type': span_type}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -255,6 +280,7 @@ class Tracer():
         retval = wrap_decorator
         shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([shared_state], {'name': name, 'service': service, 'resource': resource, 'span_type': span_type}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -267,6 +293,7 @@ class Pin():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Pin.onto", ([shared_state, obj], {'send': send}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -275,6 +302,7 @@ class Pin():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Pin.remove_from", ([shared_state, obj], {}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
@@ -283,6 +311,7 @@ class Pin():
         retval = None
         shared_state = {'api_return_value': retval}
         audit(_DD_HOOK_PREFIX + "Pin.clone", ([shared_state], {'service': service, 'tags': tags, 'tracer': tracer}))
+        retval = shared_state.get("impl_return_value", retval)
         return retval
         
     
