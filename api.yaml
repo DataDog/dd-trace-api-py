@@ -127,6 +127,7 @@ attributes:
         return_info:
           type: Optional[List[Span]]
   Tracer:
+    shares_self: true
     methods:
       flush: {}
       set_tags:

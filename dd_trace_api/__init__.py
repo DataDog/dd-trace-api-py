@@ -190,7 +190,7 @@ class Tracer():
     def flush(self) -> None:
         
         retval = None
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.flush", ([shared_state], {}))
         return retval
         
@@ -198,7 +198,7 @@ class Tracer():
     def set_tags(self, tags: Dict[str, str]) -> None:
         
         retval = None
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.set_tags", ([shared_state, tags], {}))
         return retval
         
@@ -206,7 +206,7 @@ class Tracer():
     def shutdown(self, timeout: Optional[float]) -> None:
         
         retval = None
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.shutdown", ([shared_state, timeout], {}))
         return retval
         
@@ -214,7 +214,7 @@ class Tracer():
     def start_span(self, name: str, child_of:Optional[Union[Span, Context]]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
         
         retval = Span()
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([shared_state, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
         return retval
         
@@ -222,7 +222,7 @@ class Tracer():
     def current_root_span(self) -> Span:
         
         retval = Span()
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.current_root_span", ([shared_state], {}))
         return retval
         
@@ -230,7 +230,7 @@ class Tracer():
     def current_span(self) -> Span:
         
         retval = Span()
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.current_span", ([shared_state], {}))
         return retval
         
@@ -238,7 +238,7 @@ class Tracer():
     def trace(self, name: str, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Span:
         
         retval = Span()
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.trace", ([shared_state, name], {'service': service, 'resource': resource, 'span_type': span_type}))
         return retval
         
@@ -253,7 +253,7 @@ class Tracer():
             return func_wrapper
     
         retval = wrap_decorator
-        shared_state = {'api_return_value': retval}
+        shared_state = {'api_return_value': retval, 'stub_self': self}
         audit(_DD_HOOK_PREFIX + "Tracer.wrap", ([shared_state], {'name': name, 'service': service, 'resource': resource, 'span_type': span_type}))
         return retval
         
