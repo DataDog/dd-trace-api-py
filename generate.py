@@ -61,6 +61,9 @@ def _generate_class(name, class_info):
         if shares_self:
             shared_state_vars.append(("stub_self", "self"))
         shared_state_str = "{" + ", ".join([f"'{k}': {v}" for k, v in shared_state_vars]) + "}"
+        impl_retval_code = ""
+        if method_info.get("uses_impl_retval", False):
+            impl_retval_code = "shared_state['impl_return_value'] = None"
         method_lines.append(
             f"""
     {"@staticmethod" if is_static else ""}
@@ -68,6 +71,7 @@ def _generate_class(name, class_info):
         {decorator_setup_str}
         retval = {return_info.get('value')}
         shared_state = {shared_state_str}
+        {impl_retval_code}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
         retval = shared_state.get("impl_return_value", retval)
         return retval

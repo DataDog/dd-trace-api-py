@@ -181,6 +181,7 @@ attributes:
           value: "Span()"
       wrap:
         decorator: True
+        uses_impl_retval: True
         kwargs:
           name:
             type: "Optional[str]"
