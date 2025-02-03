@@ -68,13 +68,15 @@ def _generate_class(name, class_info):
             f"""
     {"@staticmethod" if is_static else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
+        '''
+        {method_info.get("docstring", '')}
+        '''
         {decorator_setup_str}
         retval = {return_info.get('value')}
         shared_state = {shared_state_str}
         {impl_retval_code}
         audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
-        retval = shared_state.get("impl_return_value", retval)
-        return retval
+        return shared_state.get("impl_return_value", retval)
         """
         )
     methods_code = "".join(method_lines)
