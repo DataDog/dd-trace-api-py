@@ -5,7 +5,7 @@ AnyCallable = TypeVar("AnyCallable", bound=Callable)
 
 
 def _Tracer_wrap(
-    self,
+    self,  # this will be bound to a Tracer instance
     name: Optional[str] = None,
     service: Optional[str] = None,
     resource: Optional[str] = None,
@@ -47,11 +47,11 @@ def _Tracer_wrap(
     """
 
     def wrap_decorator(f: AnyCallable) -> AnyCallable:
-        span_name = name if name else "%s.%s" % (f.__module__, f.__name__)
-
         @functools.wraps(f)
         def func_wrapper(*args, **kwargs):
-            with self.trace(span_name, service=service, resource=resource, span_type=span_type):
+            with self.trace(
+                name or "%s.%s" % (f.__module__, f.__name__), service=service, resource=resource, span_type=span_type
+            ):
                 return f(*args, **kwargs)
 
         return func_wrapper
