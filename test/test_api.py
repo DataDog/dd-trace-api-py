@@ -51,3 +51,12 @@ def _traverse(node, obj_under_test):
 
 def test_api_accessible():
     _traverse(definition, dd_trace_api)
+
+
+def test_wrap():
+    @dd_trace_api.tracer.wrap()
+    def foo():
+        return 1
+
+    result = foo()
+    assert result == 1

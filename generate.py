@@ -24,65 +24,78 @@ setattr({module_name}, "{attribute_name}", {attribute_name})
     _write_out(code)
 
 
-def _build_decorator():
-    code = """
-        def wrap_decorator(f):
-            @functools.wraps(f)
-            def func_wrapper(*args, **kwargs):
-                return f(*args, **kwargs)
+def _build_method_params_and_hook_args(method_info):
+    is_static = method_info.get("static", False)
+    posarg_defs, kwarg_defs, args, kwargs = [], [], [], []
+    for arg, info in method_info.get("posargs", {}).items():
+        posarg_defs.append(f"{arg}: {info['type']}")
+        args.append(arg)
+    for kwarg, info in method_info.get("kwargs", {}).items():
+        kwarg_defs.append(f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}")
+        kwargs.append(kwarg)
+    kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
+    self_param = ["self"] if not is_static else []
+    params = ", ".join(self_param + posarg_defs + kwarg_defs)
+    args.insert(0, "shared_state")
+    args_str = "[" + ", ".join(args) + "]"
+    all_hook_args = f"{args_str}, {kwargs_str}"
+    return params, all_hook_args
 
-            return func_wrapper
-    """
-    return code
 
-
-def _generate_class(name, class_info):
-    method_lines = []
+def _build_shared_state(class_info):
     shares_self = class_info.get("shares_self", False)
-    for method_name, method_info in class_info.get("methods", {}).items():
-        is_static = method_info.get("static", False)
-        return_info = method_info.get("return_info", {})
-        posarg_defs, kwarg_defs, args, kwargs = [], [], [], []
-        for arg, info in method_info.get("posargs", {}).items():
-            posarg_defs.append(f"{arg}: {info['type']}")
-            args.append(arg)
-        for kwarg, info in method_info.get("kwargs", {}).items():
-            kwarg_defs.append(f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}")
-            kwargs.append(kwarg)
-        kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
-        self_param = ["self"] if not is_static else []
-        params = ", ".join(self_param + posarg_defs + kwarg_defs)
-        args.insert(0, "shared_state")
-        args_str = "[" + ", ".join(args) + "]"
-        decorator_setup_str = ""
-        if method_info.get("decorator", False):
-            decorator_setup_str = _build_decorator()
-        shared_state_vars = [("api_return_value", "retval")]
-        if shares_self:
-            shared_state_vars.append(("stub_self", "self"))
-        shared_state_str = "{" + ", ".join([f"'{k}': {v}" for k, v in shared_state_vars]) + "}"
-        impl_retval_code = ""
-        if method_info.get("uses_impl_retval", False):
-            impl_retval_code = "shared_state['impl_return_value'] = None"
-        method_lines.append(
-            f"""
-    {"@staticmethod" if is_static else ""}
+    shared_state_vars = [("api_return_value", "retval")]
+    if shares_self:
+        shared_state_vars.append(("stub_self", "self"))
+    return "{" + ", ".join([f"'{k}': {v}" for k, v in shared_state_vars]) + "}"
+
+
+def _build_impl_retval(method_info):
+    impl_retval_code = ""
+    if method_info.get("uses_impl_retval", False):
+        impl_retval_code = "shared_state['impl_return_value'] = None"
+    return impl_retval_code
+
+
+def _build_method(class_name, class_info, method_name, method_info):
+    if method_info.get("written", False):
+        return _connect_written_method(class_name, class_info, method_name, method_info)
+    else:
+        return _build_method_from_yaml(class_name, class_info, method_name, method_info)
+
+
+def _connect_written_method(class_name, class_info, method_name, method_info):
+    return f"""
+    {method_name} = written._{class_name}_{method_name}
+    """
+
+
+def _build_method_from_yaml(class_name, class_info, method_name, method_info):
+    return_info = method_info.get("return_info", {})
+    params, all_hook_args = _build_method_params_and_hook_args(method_info)
+    shared_state_str = _build_shared_state(class_info)
+    return f"""
+    {"@staticmethod" if method_info.get("static", False) else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
         '''
         {method_info.get("docstring", '')}
         '''
-        {decorator_setup_str}
         retval = {return_info.get('value')}
         shared_state = {shared_state_str}
-        {impl_retval_code}
-        audit(_DD_HOOK_PREFIX + "{name}.{method_name or 'foo'}", ({args_str}, {kwargs_str}))
+        {_build_impl_retval(method_info)}
+        audit(_DD_HOOK_PREFIX + "{class_name}.{method_name or 'foo'}", ({all_hook_args}))
         return shared_state.get("impl_return_value", retval)
-        """
-        )
+    """
+
+
+def _generate_class(class_name, class_info):
+    method_lines = []
+    for method_name, method_info in class_info.get("methods", {}).items():
+        method_lines.append(_build_method(class_name, class_info, method_name, method_info))
     methods_code = "".join(method_lines)
     code = f"""
-class {name}():
-    {methods_code or "pass"}
+class {class_name}():
+{methods_code or "pass"}
     """
     _write_out(code)
 
@@ -122,7 +135,8 @@ from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type
 import importlib.metadata
 __version__ = importlib.metadata.version('dd_trace_api')
 
-_DD_HOOK_PREFIX = "dd.hooks."
+from .constants import _DD_HOOK_PREFIX
+from . import written
 
 
 class _Stub:

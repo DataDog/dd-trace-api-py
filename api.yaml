@@ -224,59 +224,7 @@ attributes:
           type: "Span"
           value: "Span()"
       wrap:
-        docstring: |
-          '
-          A decorator used to trace an entire function. If the traced function
-          is a coroutine, it traces the coroutine execution when is awaited.
-          If a ``wrap_executor`` callable has been provided in the ``Tracer.configure()``
-          method, it will be called instead of the default one when the function
-          decorator is invoked.
-
-          >>> @tracer.wrap("my.wrapped.function", service="my.service")
-              def run():
-                  return "run"
-
-          >>> # name will default to "execute" if unset
-              @tracer.wrap()
-              def execute():
-                  return "executed"
-
-          >>> # or use it in asyncio coroutines
-              @tracer.wrap()
-              async def coroutine():
-                  return "executed"
-
-          >>> @tracer.wrap()
-              @asyncio.coroutine
-              def coroutine():
-                  return "executed"
-
-          You can access the current span using `tracer.current_span()` to set
-          tags:
-
-          >>> @tracer.wrap()
-              def execute():
-                  span = tracer.current_span()
-                  span.set_tag("a", "b")
-          '
-        decorator: True
-        uses_impl_retval: True
-        kwargs:
-          name:
-            type: "Optional[str]"
-            doc: the name of the operation being traced. If not set, defaults to the fully qualified function name.
-          service:
-            type: "Optional[str]"
-            doc: the name of the service being traced. If not set, it will inherit the service from its parent.
-          resource:
-            type: "Optional[str]"
-            doc: an optional name of the resource being tracked
-          span_type:
-            type: "Optional[str]"
-            doc: an optional operation type
-        return_info:
-          type: "Callable[[TypeVar('AnyCallable', bound=Callable)], TypeVar('AnyCallable', bound=Callable)]"
-          value: "wrap_decorator"
+        written: True
   tracer:
     instance_of: "Tracer"
   span:
