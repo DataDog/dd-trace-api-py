@@ -1,6 +1,9 @@
 [project]
 name = "dd_trace_api"
 version = "0.0.0"
-dependencies = [
-    "pyyaml >= 6.0.0"
+
+[project.optional-dependencies]
+dev = [
+    "pyyaml >= 6.0.0",
+    "pytest"
 ]
