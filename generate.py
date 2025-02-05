@@ -36,18 +36,11 @@ def _build_method_params_and_hook_args(method_info):
     kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
     self_param = ["self"] if not is_static else []
     params = ", ".join(self_param + posarg_defs + kwarg_defs)
-    args.insert(0, "shared_state")
+    args.insert(0, ("retval"))
+    args.insert(0, ("self"))
     args_str = "[" + ", ".join(args) + "]"
     all_hook_args = f"{args_str}, {kwargs_str}"
     return params, all_hook_args
-
-
-def _build_shared_state(class_info):
-    shares_self = class_info.get("shares_self", False)
-    shared_state_vars = [("api_return_value", "retval")]
-    if shares_self:
-        shared_state_vars.append(("stub_self", "self"))
-    return "{" + ", ".join([f"'{k}': {v}" for k, v in shared_state_vars]) + "}"
 
 
 def _build_impl_retval(method_info):
@@ -73,7 +66,6 @@ def _connect_written_method(class_name, class_info, method_name, method_info):
 def _build_method_from_yaml(class_name, class_info, method_name, method_info):
     return_info = method_info.get("return_info", {})
     params, all_hook_args = _build_method_params_and_hook_args(method_info)
-    shared_state_str = _build_shared_state(class_info)
     return f"""
     {"@staticmethod" if method_info.get("static", False) else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
@@ -81,10 +73,10 @@ def _build_method_from_yaml(class_name, class_info, method_name, method_info):
         {method_info.get("docstring", '')}
         '''
         retval = {return_info.get('value')}
-        shared_state = {shared_state_str}
         {_build_impl_retval(method_info)}
+        # XXX no string concatenation
         audit(_DD_HOOK_PREFIX + "{class_name}.{method_name or 'foo'}", ({all_hook_args}))
-        return shared_state.get("impl_return_value", retval)
+        return retval
     """
 
 

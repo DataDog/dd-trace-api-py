@@ -23,10 +23,10 @@ class Span():
         
         '''
         retval = self
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.__enter__", ([shared_state], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.__enter__", ([self, retval], {}))
+        return retval
     
     
     def __exit__(self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Optional[TracebackType]) -> None:
@@ -34,10 +34,10 @@ class Span():
         
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.__exit__", ([shared_state, exc_type, exc_val, exc_tb], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.__exit__", ([self, retval, exc_type, exc_val, exc_tb], {}))
+        return retval
     
     
     def set_exc_info(self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Optional[TracebackType]) -> None:
@@ -45,10 +45,10 @@ class Span():
         Tag the span with an error tuple as from ``sys.exc_info()``
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.set_exc_info", ([shared_state, exc_type, exc_val, exc_tb], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.set_exc_info", ([self, retval, exc_type, exc_val, exc_tb], {}))
+        return retval
     
     
     def set_traceback(self, limit:Optional[int]=None) -> None:
@@ -58,10 +58,10 @@ it with the current python stack."
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([shared_state], {'limit': limit}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([self, retval], {'limit': limit}))
+        return retval
     
     
     def set_tags(self, tags: Dict[Union[Text, bytes], Any]) -> None:
@@ -69,10 +69,10 @@ it with the current python stack."
         Set a dictionary of tags on the given span. Keys and values must be strings (or stringable)
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.set_tags", ([shared_state, tags], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.set_tags", ([self, retval, tags], {}))
+        return retval
     
     
     def finish_with_ancestors(self) -> None:
@@ -86,10 +86,10 @@ the trace is desired.
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.finish_with_ancestors", ([shared_state], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.finish_with_ancestors", ([self, retval], {}))
+        return retval
     
     
     def finish(self, finish_time:Optional[float]=None) -> None:
@@ -100,10 +100,10 @@ If the span has already been finished don't do anything.
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Span.finish", ([shared_state], {'finish_time': finish_time}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Span.finish", ([self, retval], {'finish_time': finish_time}))
+        return retval
     
     
 
@@ -118,10 +118,10 @@ Flush the tracer's internal buffer, sending spans to Datadog's intake endpoint
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.flush", ([shared_state], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.flush", ([self, retval], {}))
+        return retval
     
     
     def set_tags(self, tags: Dict[str, str]) -> None:
@@ -133,10 +133,10 @@ the tracer.
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.set_tags", ([shared_state, tags], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.set_tags", ([self, retval, tags], {}))
+        return retval
     
     
     def shutdown(self, timeout: Optional[float]) -> None:
@@ -145,10 +145,10 @@ the tracer.
 
         '''
         retval = None
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.shutdown", ([shared_state, timeout], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.shutdown", ([self, retval, timeout], {}))
+        return retval
     
     
     def start_span(self, name: str, child_of:Optional[Span]=None, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None, activate:bool='False') -> Span:
@@ -181,10 +181,10 @@ Spans from ``start_span`` are not activated by default::
 
         '''
         retval = Span()
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([shared_state, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([self, retval, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
+        return retval
     
     
     def current_root_span(self) -> Span:
@@ -210,10 +210,10 @@ For example::
 
         '''
         retval = Span()
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.current_root_span", ([shared_state], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.current_root_span", ([self, retval], {}))
+        return retval
     
     
     def current_span(self) -> Span:
@@ -226,10 +226,10 @@ be returned by this method.
 
         '''
         retval = Span()
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.current_span", ([shared_state], {}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.current_span", ([self, retval], {}))
+        return retval
     
     
     def trace(self, name: str, service:Optional[str]=None, resource:Optional[str]=None, span_type:Optional[str]=None) -> Span:
@@ -272,10 +272,10 @@ Example of the automatic parenting::
 
         '''
         retval = Span()
-        shared_state = {'api_return_value': retval, 'stub_self': self}
         
-        audit(_DD_HOOK_PREFIX + "Tracer.trace", ([shared_state, name], {'service': service, 'resource': resource, 'span_type': span_type}))
-        return shared_state.get("impl_return_value", retval)
+        # XXX no string concatenation
+        audit(_DD_HOOK_PREFIX + "Tracer.trace", ([self, retval, name], {'service': service, 'resource': resource, 'span_type': span_type}))
+        return retval
     
     wrap = written._Tracer_wrap
     
