@@ -36,9 +36,7 @@ def _build_method_params_and_hook_args(class_name, method_name, method_info):
     kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
     self_param = ["self"] if not is_static else []
     params = ", ".join(self_param + posarg_defs + kwarg_defs)
-    args.insert(0, "retval")
-    args.insert(0, "self")
-    args.insert(0, f"'{class_name}.{method_name}'")
+    args = ["retval", "self", f"'{method_name}'"] + args
     args_str = "[" + ", ".join(args) + "]"
     all_hook_args = f"{args_str}, {kwargs_str}"
     return params, all_hook_args
