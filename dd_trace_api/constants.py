@@ -1,1 +1,1 @@
-_DD_HOOK_PREFIX = "dd.hooks."
+_DD_HOOK_NAME = "dd.hook"

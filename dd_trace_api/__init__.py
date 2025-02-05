@@ -7,7 +7,7 @@ from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, Type
 import importlib.metadata
 __version__ = importlib.metadata.version('dd_trace_api')
 
-from .constants import _DD_HOOK_PREFIX
+from .constants import _DD_HOOK_NAME
 from . import written
 
 
@@ -25,7 +25,7 @@ class Span():
         retval = self
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.__enter__", ([self, retval], {}))
+        audit(_DD_HOOK_NAME, (['Span.__enter__', self, retval], {}))
         return retval
     
     
@@ -36,7 +36,7 @@ class Span():
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.__exit__", ([self, retval, exc_type, exc_val, exc_tb], {}))
+        audit(_DD_HOOK_NAME, (['Span.__exit__', self, retval, exc_type, exc_val, exc_tb], {}))
         return retval
     
     
@@ -47,7 +47,7 @@ class Span():
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.set_exc_info", ([self, retval, exc_type, exc_val, exc_tb], {}))
+        audit(_DD_HOOK_NAME, (['Span.set_exc_info', self, retval, exc_type, exc_val, exc_tb], {}))
         return retval
     
     
@@ -60,7 +60,7 @@ it with the current python stack."
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.set_traceback", ([self, retval], {'limit': limit}))
+        audit(_DD_HOOK_NAME, (['Span.set_traceback', self, retval], {'limit': limit}))
         return retval
     
     
@@ -71,7 +71,7 @@ it with the current python stack."
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.set_tags", ([self, retval, tags], {}))
+        audit(_DD_HOOK_NAME, (['Span.set_tags', self, retval, tags], {}))
         return retval
     
     
@@ -88,7 +88,7 @@ the trace is desired.
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.finish_with_ancestors", ([self, retval], {}))
+        audit(_DD_HOOK_NAME, (['Span.finish_with_ancestors', self, retval], {}))
         return retval
     
     
@@ -102,7 +102,7 @@ If the span has already been finished don't do anything.
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Span.finish", ([self, retval], {'finish_time': finish_time}))
+        audit(_DD_HOOK_NAME, (['Span.finish', self, retval], {'finish_time': finish_time}))
         return retval
     
     
@@ -120,7 +120,7 @@ Flush the tracer's internal buffer, sending spans to Datadog's intake endpoint
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.flush", ([self, retval], {}))
+        audit(_DD_HOOK_NAME, (['Tracer.flush', self, retval], {}))
         return retval
     
     
@@ -135,7 +135,7 @@ the tracer.
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.set_tags", ([self, retval, tags], {}))
+        audit(_DD_HOOK_NAME, (['Tracer.set_tags', self, retval, tags], {}))
         return retval
     
     
@@ -147,7 +147,7 @@ the tracer.
         retval = None
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.shutdown", ([self, retval, timeout], {}))
+        audit(_DD_HOOK_NAME, (['Tracer.shutdown', self, retval, timeout], {}))
         return retval
     
     
@@ -183,7 +183,7 @@ Spans from ``start_span`` are not activated by default::
         retval = Span()
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.start_span", ([self, retval, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
+        audit(_DD_HOOK_NAME, (['Tracer.start_span', self, retval, name], {'child_of': child_of, 'service': service, 'resource': resource, 'span_type': span_type, 'activate': activate}))
         return retval
     
     
@@ -212,7 +212,7 @@ For example::
         retval = Span()
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.current_root_span", ([self, retval], {}))
+        audit(_DD_HOOK_NAME, (['Tracer.current_root_span', self, retval], {}))
         return retval
     
     
@@ -228,7 +228,7 @@ be returned by this method.
         retval = Span()
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.current_span", ([self, retval], {}))
+        audit(_DD_HOOK_NAME, (['Tracer.current_span', self, retval], {}))
         return retval
     
     
@@ -274,7 +274,7 @@ Example of the automatic parenting::
         retval = Span()
         
         # XXX no string concatenation
-        audit(_DD_HOOK_PREFIX + "Tracer.trace", ([self, retval, name], {'service': service, 'resource': resource, 'span_type': span_type}))
+        audit(_DD_HOOK_NAME, (['Tracer.trace', self, retval, name], {'service': service, 'resource': resource, 'span_type': span_type}))
         return retval
     
     wrap = written._Tracer_wrap
