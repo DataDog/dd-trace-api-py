@@ -32,6 +32,12 @@ package [`dd-trace-py`](https://github.com/Datadog/dd-trace-py) and bootstrap it
 $ pip install dd-trace-py
 ```
 
+With `dd-trace-py` installed, follow that package's [quickstart instructions](https://ddtrace.readthedocs.io/en/stable/installation_quickstart.html#tracing)
+to bootstrap the tracing machinery.
+
+When your code against `dd_trace_api` executes in this context, `dd-trace-py` will respond to your API calls with
+real tracing actions.
+
 How it works
 ============
 
