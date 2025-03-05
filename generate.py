@@ -73,7 +73,6 @@ def _build_method_from_yaml(class_name, class_info, method_name, method_info):
         '''
         retval = {return_info.get('value')}
         {_build_impl_retval(method_info)}
-        # XXX no string concatenation
         audit(_DD_HOOK_NAME, ({all_hook_args}))
         return retval
     """
