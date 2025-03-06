@@ -30,4 +30,4 @@ jobs:
       - name: Install dev dependencies
         run: pip install -e '.[dev]'
       - name: Run tests
-        run: hatch run test:test
+        run: hatch run test.py${{ matrix.python-version }}:test
