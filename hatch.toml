@@ -55,7 +55,7 @@ dependencies = [
 
 [envs.generate.scripts]
 api = [
-    "python generate.py"
+    "python generate.py",
 ]
 
 [envs.release]

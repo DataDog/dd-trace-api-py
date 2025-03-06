@@ -35,7 +35,6 @@ exclude = '''
 (
   .venv*
   | \.riot/
-  | dd_trace_api/__init__\.py
   | \.eggs
   | \.git
   | \.hg

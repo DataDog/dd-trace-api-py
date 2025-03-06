@@ -131,7 +131,7 @@ attributes:
             doc: an optional operation type
           activate:
             type: "bool"
-            default: "False"
+            default: False
             doc: activate the span once it is created
         return_info:
           type: "Span"

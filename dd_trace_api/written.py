@@ -1,5 +1,6 @@
 import functools
-from typing import Optional, Callable, TypeVar
+from mypy_extensions import KwArg, VarArg
+from typing import Optional, Callable, TypeVar, Any
 
 AnyCallable = TypeVar("AnyCallable", bound=Callable)
 
@@ -10,7 +11,7 @@ def _Tracer_wrap(
     service: Optional[str] = None,
     resource: Optional[str] = None,
     span_type: Optional[str] = None,
-) -> Callable[[AnyCallable], AnyCallable]:
+) -> Callable[[VarArg(Any), KwArg(Any)], Any]:
     """
     A function returning a decorator used to trace an entire function. If the traced function
     is a coroutine, it traces the coroutine execution when is awaited.
@@ -46,7 +47,7 @@ def _Tracer_wrap(
             span.set_tag("a", "b")
     """
 
-    def wrap_decorator(f: AnyCallable) -> AnyCallable:
+    def wrap_decorator(f: AnyCallable) -> Callable[[VarArg(Any), KwArg(Any)], Any]:
         @functools.wraps(f)
         def func_wrapper(*args, **kwargs):
             with self.trace(
