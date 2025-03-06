@@ -1,0 +1,69 @@
+[envs.lint]
+detached = true
+python = "3.12"
+dependencies = [
+    "black==23.10.1",
+    "codespell==2.3.0",
+    "click==8.1.7",
+    "mypy==0.991",
+    "pygments==2.16.1",
+]
+
+[envs.lint.scripts]
+black_check = [
+    "black --check {args:.}",
+]
+style = [
+    "black_check",
+]
+fmt = [
+    "black {args:.}",
+    "style",
+]
+# checks should encapsulate all rules used in pre-check
+checks = [
+    "style",
+    "typing",
+    "spelling",
+]
+spelling = [
+    "codespell -I docs/spelling_wordlist.txt {args:dd_trace_api/ docs/ tests/ releasenotes/}",
+]
+typing = [
+    "mypy {args}",
+]
+
+[envs.test]
+dependencies = [
+    "pytest",
+    "pyyaml"
+]
+
+[envs.test.scripts]
+test = [
+    "pytest"
+]
+
+[[envs.test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+[envs.generate]
+requires-python = "3.13"
+dependencies = [
+    "pyyaml"
+]
+
+[envs.generate.scripts]
+api = [
+    "python generate.py"
+]
+
+[envs.release]
+dependencies = [
+    "reno"
+]
+
+[envs.release.scripts]
+notes = [
+    "reno new {args}"
+]

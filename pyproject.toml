@@ -7,7 +7,6 @@ authors = [
 ]
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -15,14 +14,12 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = [
-    "pyyaml >= 6.0.0",
-    "pytest"
+    "hatch == 1.14.0"
 ]
-
 
 [project.urls]
 "Bug Tracker" = "https://github.com/DataDog/dd-trace-py-api/issues"
