@@ -14,9 +14,7 @@ def _generate_module(module_name, module_info):
             f"""
 setattr({module_name}, "{attribute_name}", {attribute_name})
     """
-            for attribute_name, attribute_value in module_info.get(
-                "attributes", {}
-            ).items()
+            for attribute_name, attribute_value in module_info.get("attributes", {}).items()
         ]
     )
     code = f"""
@@ -33,9 +31,7 @@ def _build_method_params_and_hook_args(class_name, method_name, method_info):
         posarg_defs.append(f"{arg}: {info['type']}")
         args.append(arg)
     for kwarg, info in method_info.get("kwargs", {}).items():
-        kwarg_defs.append(
-            f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}"
-        )
+        kwarg_defs.append(f"{kwarg}:{info.get('type')}={info.get('default').__repr__()}")
         kwargs.append(kwarg)
     kwargs_str = "{" + ", ".join([f"'{kwarg}': {kwarg}" for kwarg in kwargs]) + "}"
     self_param = ["self"] if not is_static else []
@@ -68,9 +64,7 @@ def _connect_written_method(class_name, class_info, method_name, method_info):
 
 def _build_method_from_yaml(class_name, class_info, method_name, method_info):
     return_info = method_info.get("return_info", {})
-    params, all_hook_args = _build_method_params_and_hook_args(
-        class_name, method_name, method_info
-    )
+    params, all_hook_args = _build_method_params_and_hook_args(class_name, method_name, method_info)
     return f"""
     {"@staticmethod" if method_info.get("static", False) else ""}
     def {method_name}({params}) -> {return_info.get('type')}:
@@ -87,9 +81,7 @@ def _build_method_from_yaml(class_name, class_info, method_name, method_info):
 def _generate_class(class_name, class_info):
     method_lines = []
     for method_name, method_info in class_info.get("methods", {}).items():
-        method_lines.append(
-            _build_method(class_name, class_info, method_name, method_info)
-        )
+        method_lines.append(_build_method(class_name, class_info, method_name, method_info))
     methods_code = "".join(method_lines)
     code = f"""
 class {class_name}():

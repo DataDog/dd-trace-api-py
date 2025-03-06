@@ -50,7 +50,10 @@ def _Tracer_wrap(
         @functools.wraps(f)
         def func_wrapper(*args, **kwargs):
             with self.trace(
-                name or "%s.%s" % (f.__module__, f.__name__), service=service, resource=resource, span_type=span_type
+                name or "%s.%s" % (f.__module__, f.__name__),
+                service=service,
+                resource=resource,
+                span_type=span_type,
             ):
                 return f(*args, **kwargs)
 

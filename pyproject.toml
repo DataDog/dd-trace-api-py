@@ -26,3 +26,25 @@ dev = [
 Changelog = "https://github.com/DataDog/dd-trace-py-api/releases"
 Homepage = "https://github.com/DataDog/dd-trace-py-api/"
 "Source Code" = "https://github.com/DataDog/dd-trace-py-api/"
+
+[tool.black]
+line-length = 120
+target_version = ['py38', 'py38', 'py39', 'py310', 'py311', 'py312']
+include = '''\.py[ix]?$'''
+exclude = '''
+(
+  .venv*
+  | \.riot/
+  | dd_trace_api/__init__\.py
+  | \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.nox
+  | \.tox
+  | \.venv
+  | venv
+  | build/
+  | dist/
+)
+'''
