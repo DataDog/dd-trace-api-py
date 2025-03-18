@@ -51,6 +51,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install build module
+        run: |
+          pip install build
+
       - name: Build sdist
         run: |
           python -m build --sdist
