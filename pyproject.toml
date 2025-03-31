@@ -1,6 +1,6 @@
 [project]
 name = "dd_trace_api"
-version = "0.0.0"
+version = "0.0.1"
 description = "The public API of the dd-trace libraries"
 authors = [
     { name = "Datadog, Inc.", email = "dev@datadoghq.com" },
