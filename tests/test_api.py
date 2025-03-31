@@ -4,7 +4,8 @@ from sys import addaudithook
 import pytest
 import yaml
 
-import dd_trace_api
+import ddtrace_api
+
 
 with open(os.path.join(os.path.dirname(__file__), "..", "api.yaml")) as definition_stream:
     definition = yaml.safe_load(definition_stream)
@@ -50,11 +51,11 @@ def _traverse(node, obj_under_test):
 
 
 def test_api_accessible():
-    _traverse(definition, dd_trace_api)
+    _traverse(definition, ddtrace_api)
 
 
 def test_wrap():
-    @dd_trace_api.tracer.wrap()
+    @ddtrace_api.tracer.wrap()
     def foo():
         return 1
 

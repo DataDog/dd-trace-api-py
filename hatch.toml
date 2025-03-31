@@ -27,7 +27,7 @@ checks = [
     "spelling",
 ]
 spelling = [
-    "codespell -I docs/spelling_wordlist.txt {args:dd_trace_api/ docs/ tests/ releasenotes/}",
+    "codespell -I docs/spelling_wordlist.txt {args:ddtrace_api/ docs/ tests/ releasenotes/}",
 ]
 typing = [
     "mypy {args}",
