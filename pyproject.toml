@@ -1,5 +1,5 @@
 [project]
-name = "dd_trace_api"
+name = "ddtrace-api"
 version = "0.0.1"
 description = "The public API of the dd-trace libraries"
 authors = [
