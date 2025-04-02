@@ -20,7 +20,7 @@ jobs:
           python-version: '3.13'
 
       - run: pip install -e '.[dev]'
-      - run: pdoc -o docs/pdocs
+      - run: pdoc ddtrace_api -o docs/pdocs
 
       - uses: actions/upload-pages-artifact@v3
         with:
