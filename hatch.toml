@@ -1,11 +1,11 @@
 [envs.lint]
 detached = true
-python = "3.12"
+python = "3.14"
 dependencies = [
-    "black==23.10.1",
+    "black==26.5.1",
     "codespell==2.3.0",
     "click==8.1.7",
-    "mypy==0.991",
+    "mypy==2.3.1",
     "pygments==2.16.1",
 ]
 
@@ -45,10 +45,10 @@ test = [
 ]
 
 [[envs.test.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [envs.generate]
-requires-python = "3.13"
+requires-python = "3.14"
 dependencies = [
     "pyyaml"
 ]
