@@ -13,6 +13,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 requires-python = ">=3.8"
 
@@ -31,7 +32,7 @@ Homepage = "https://github.com/DataDog/dd-trace-py-api/"
 
 [tool.black]
 line-length = 120
-target_version = ['py38', 'py38', 'py39', 'py310', 'py311', 'py312']
+target_version = ['py38', 'py38', 'py39', 'py310', 'py311', 'py312', 'py313', 'py314']
 include = '''\.py[ix]?$'''
 exclude = '''
 (
