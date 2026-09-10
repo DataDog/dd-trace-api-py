@@ -9,14 +9,9 @@ with open(os.path.join(os.path.dirname(__file__), "api.yaml")) as definition_str
 
 def _generate_module(module_name, module_info):
     """Generate a stub that is not intended to be instantiated in client code"""
-    attrs_code = "\n".join(
-        [
-            f"""
+    attrs_code = "\n".join([f"""
 setattr({module_name}, "{attribute_name}", {attribute_name})
-    """
-            for attribute_name, attribute_value in module_info.get("attributes", {}).items()
-        ]
-    )
+    """ for attribute_name, attribute_value in module_info.get("attributes", {}).items()])
     code = f"""
 {module_name} = {module_info.get("instance_of", "_Stub")}()
 {attrs_code}

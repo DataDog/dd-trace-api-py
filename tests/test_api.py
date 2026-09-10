@@ -6,7 +6,6 @@ import yaml
 
 import ddtrace_api
 
-
 with open(os.path.join(os.path.dirname(__file__), "..", "api.yaml")) as definition_stream:
     definition = yaml.safe_load(definition_stream)
 
