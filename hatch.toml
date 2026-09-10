@@ -2,7 +2,7 @@
 detached = true
 python = "3.14"
 dependencies = [
-    "black==23.10.1",
+    "black==26.5.1",
     "codespell==2.3.0",
     "click==8.1.7",
     "mypy==0.991",
