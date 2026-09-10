@@ -16,7 +16,7 @@ classifiers = [
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["datadog", "tracing", "apm", "ddtrace", "observability"]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = [
