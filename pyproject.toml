@@ -19,7 +19,8 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
     "hatch == 1.14.0",
-    "pdoc == 14.7.0"
+    "pdoc == 14.7.0",
+    "virtualenv < 21.0.0"
 ]
 
 [project.urls]
