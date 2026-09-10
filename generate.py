@@ -123,7 +123,7 @@ from sys import audit
 from types import TracebackType  # noqa:F401
 from typing import Optional, Any, Callable, Dict, List, Union, Text, Tuple, TypeVar, Type  # noqa:F401
 import importlib.metadata
-__version__ = importlib.metadata.version('dd_trace_api')
+__version__ = importlib.metadata.version('ddtrace_api')
 
 from .constants import _DD_HOOK_NAME
 from . import written
